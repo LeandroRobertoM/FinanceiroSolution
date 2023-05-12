@@ -12,4 +12,9 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Financeiro.Solution.Infra.Data.Migrations\Financeiro.Solution.Infra.Data.Migrations.csproj" />
+    <ProjectReference Include="..\FinanceiroSolution.Domain\FinanceiroSolution.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
