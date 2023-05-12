@@ -8,10 +8,10 @@ namespace FinanceiroSolution.Domain.Interfaces.Generics
 {
     public interface InterfaceGeneric<T> where T : class
     {
-        Task Adicionar(T Objeto);
-        Task Editar(T Objeto);
-        Task Excluir(T Objeto);
-        Task<T> BuscarPorID(int Id);
-        Task<List<T>> BuscarTodos();
+        Task Add(T Objeto);
+        Task Update(T Objeto);
+        Task Delete(T Objeto);
+        Task<T> GetEntityById(int Id);
+        Task<List<T>> List();
     }
 }

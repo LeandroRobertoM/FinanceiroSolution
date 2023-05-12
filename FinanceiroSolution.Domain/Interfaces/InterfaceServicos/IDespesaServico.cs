@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FinanceiroSolution.Domain.Servicos
+namespace FinanceiroSolution.Domain.Interfaces.Servicos
 {
     public interface IDespesaServico
     {

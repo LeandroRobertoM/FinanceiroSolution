@@ -17,6 +17,8 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Context
         public DapperContext(IConfiguration configuration)
         {
             _configuration = configuration;
+
+            
         }
 
         public IDbConnection CreateConnection()
@@ -24,6 +26,7 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Context
 
         public IDbConnection CreateMasterConnection()
             => new SqlConnection(_configuration.GetConnectionString("MasterConnection"));
+
     }
 }
 
