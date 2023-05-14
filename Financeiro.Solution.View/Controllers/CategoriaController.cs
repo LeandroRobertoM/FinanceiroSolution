@@ -1,4 +1,5 @@
-﻿using FinanceiroSolution.Domain.Interfaces.ICategoria;
+﻿using FinanceiroSolution.Domain.Entidades;
+using FinanceiroSolution.Domain.Interfaces.ICategoria;
 using FinanceiroSolution.Domain.Interfaces.Servicos;
 using FinanceiroSolution.Domain.Servicos;
 using Microsoft.AspNetCore.Http;
@@ -24,6 +25,15 @@ namespace Financeiro.Solution.View.Controllers
         public async Task<object> ListarCategoriasUsuario(string emailUsuario)
         {
             return _InterfaceCategoria.ListarCategoriasUsuario(emailUsuario);
+        }
+
+        [HttpPost("/api/AdicionarCategoria")]
+        [Produces("application/json")]
+        public async Task<object> AdicionarCategoria(Categoria categoria)
+        {
+            await _ICategoriaServico.AdicionarCategoria(categoria);
+
+            return categoria;
         }
     }
 }
