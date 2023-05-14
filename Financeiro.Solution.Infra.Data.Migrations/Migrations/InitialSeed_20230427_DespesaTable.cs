@@ -20,7 +20,7 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
         public override void Up()
         {
             Create.Table("Despesa")
-                .WithColumn("IdDespesa").AsGuid().NotNullable().PrimaryKey()
+                .WithColumn("IdDespesaw").AsGuid().NotNullable().PrimaryKey()
                 .WithColumn("IdUser").AsGuid().NotNullable()
                 .WithColumn("Valor").AsDecimal().NotNullable()
                 .WithColumn("Mes").AsInt32().NotNullable()

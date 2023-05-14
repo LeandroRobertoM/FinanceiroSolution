@@ -30,7 +30,13 @@ namespace Financeiro.Solution.Infra.Data.Repositorio.Generics
         public async Task Add(T obj)
         {
             using IDbConnection db = _context.CreateConnection();
-            await db.ExecuteAsync($"INSERT INTO {typeof(T).Name}s VALUES (@property1, @property2)", obj);
+            var properties = typeof(T).GetProperties();
+            var fieldNames = string.Join(", ", properties.Select(p => p.Name));
+            var parameterNames = string.Join(", ", properties.Select(p => "@" + p.Name));
+
+            var query = $"INSERT INTO {typeof(T).Name}s ({fieldNames}) VALUES ({parameterNames})";
+
+            await db.ExecuteAsync(query, obj);
         }
 
         public async Task<List<T>> GetAll()
