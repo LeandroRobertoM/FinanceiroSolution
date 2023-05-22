@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace FinanceiroSolution.Domain.Entidades
 {
-    public class Categoria
+    public class Categoria:Base
     {
         public int IdCategoria { get; set; }
 
