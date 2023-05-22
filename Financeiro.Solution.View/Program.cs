@@ -5,6 +5,7 @@ using Financeiro.Solution.Infra.Data.Migrations.Extensions;
 using Financeiro.Solution.Infra.Data.Migrations.Migrations;
 using Financeiro.Solution.Infra.Data.Repositorio;
 using FinanceiroSolution.Domain.Interfaces.ICategoria;
+using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
 using FinanceiroSolution.Domain.Interfaces.Servicos;
 using FinanceiroSolution.Domain.Servicos;
 using FluentMigrator.Runner;
@@ -26,6 +27,9 @@ builder.Services.AddSingleton<InterfaceCategoria, CategoriaRepository>();
 
 // SERVIÇO DOMINIO
 builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
+builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
+builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
+builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
 
 
 // Add services to the container.
@@ -48,12 +52,8 @@ if (app.Environment.IsDevelopment())
 
 
 
-
 app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
 
