@@ -5,11 +5,15 @@ using Financeiro.Solution.Infra.Data.Migrations.Extensions;
 using Financeiro.Solution.Infra.Data.Migrations.Migrations;
 using Financeiro.Solution.Infra.Data.Repositorio;
 using FinanceiroSolution.Domain.Interfaces.ICategoria;
+using FinanceiroSolution.Domain.Interfaces.IDespesa;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
+using FinanceiroSolution.Domain.Interfaces.ISistemaFinanceiro;
+using FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro;
 using FinanceiroSolution.Domain.Interfaces.Servicos;
 using FinanceiroSolution.Domain.Servicos;
 using FluentMigrator.Runner;
 using System.Reflection;
+
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
@@ -22,14 +26,19 @@ builder.Services.AddControllers();
 
 // INTERFACE E REPOSITORIO
 builder.Services.AddSingleton<InterfaceCategoria, CategoriaRepository>();
+builder.Services.AddSingleton<InterfaceDespesa, DespesaRepository>();
+//builder.Services.AddSingleton<InterfaceSistemaFinanceiro, SistemaFinanceiroRepository>();
+//builder.Services.AddSingleton<InterfaceUserSistemaFinanceiro, UsuarioSistemaFinanceiroRepository>();
 
 
 
 // SERVIÇO DOMINIO
-builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
-builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
-builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
-builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
+//builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
+//builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
+//builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
+//builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
+
+
 
 
 // Add services to the container.
