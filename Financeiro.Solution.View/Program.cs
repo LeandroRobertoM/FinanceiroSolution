@@ -1,9 +1,12 @@
 
+using Financeiro.Solution.Infra.Data.Configuracao;
 using Financeiro.Solution.Infra.Data.Migrations;
 using Financeiro.Solution.Infra.Data.Migrations.Context;
 using Financeiro.Solution.Infra.Data.Migrations.Extensions;
 using Financeiro.Solution.Infra.Data.Migrations.Migrations;
 using Financeiro.Solution.Infra.Data.Repositorio;
+using Financeiro.Solution.View.Token;
+using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.ICategoria;
 using FinanceiroSolution.Domain.Interfaces.IDespesa;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
@@ -12,6 +15,11 @@ using FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro;
 using FinanceiroSolution.Domain.Interfaces.Servicos;
 using FinanceiroSolution.Domain.Servicos;
 using FluentMigrator.Runner;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 
 
@@ -21,8 +29,17 @@ var startup = new Startup(builder.Configuration);
 startup.ConfigureServices(builder.Services);
 builder.Services.AddControllers();
 
-
 builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<EntityFramework>(options =>
+               options.UseSqlServer(
+                   builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<EntityFramework>();
+
 
 // INTERFACE E REPOSITORIO
 builder.Services.AddSingleton<InterfaceCategoria, CategoriaRepository>();
@@ -39,14 +56,42 @@ builder.Services.AddSingleton<InterfaceDespesa, DespesaRepository>();
 //builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
 
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+             .AddJwtBearer(option =>
+             {
+                 option.TokenValidationParameters = new TokenValidationParameters
+                 {
+                     ValidateIssuer = false,
+                     ValidateAudience = false,
+                     ValidateLifetime = true,
+                     ValidateIssuerSigningKey = true,
+
+                     ValidIssuer = "Teste.Securiry.Bearer",
+                     ValidAudience = "Teste.Securiry.Bearer",
+                     IssuerSigningKey = JwtSecurityKey.Create("Secret_Key-12345678")
+                 };
+
+                 option.Events = new JwtBearerEvents
+                 {
+                     OnAuthenticationFailed = context =>
+                     {
+                         Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
+                         return Task.CompletedTask;
+                     },
+                     OnTokenValidated = context =>
+                     {
+                         Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
+                         return Task.CompletedTask;
+                     }
+                 };
+             });
+
 
 
 // Add services to the container.
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+builder.Services.AddAuthentication();
 
 var app = builder.Build();
 
@@ -60,9 +105,18 @@ if (app.Environment.IsDevelopment())
 }
 
 
+var devClient = "http://localhost:4200";
+
+app.UseCors(x =>
+x.AllowAnyOrigin()
+.AllowAnyMethod()
+.AllowAnyHeader()
+.WithOrigins(devClient));
+
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
+app.UseAuthentication();
 app.MapControllers();
 app.Run();
 

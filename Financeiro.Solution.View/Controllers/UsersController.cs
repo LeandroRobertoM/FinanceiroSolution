@@ -40,7 +40,7 @@ namespace Financeiro.Solution.View.Controllers
             {
                 Email = login.email,
                 UserName = login.email,
-                Cpf = login.cpf
+                CPF = login.cpf
             };
 
             var result = await _userManager.CreateAsync(user, login.senha);
