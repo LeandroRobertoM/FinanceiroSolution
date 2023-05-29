@@ -71,7 +71,7 @@ namespace Financeiro.Solution.Infra.Data.Configuracao
 
        public string ObterStringConexao()
        {
-            return @"server=DESKTOP-RT242MK\\SQLEXPRESS; database=SistemaFinanceiro12345; Integrated Security=true;User ID=sa;Password=Core@2023;TrustServerCertificate=True";
+            return @"server=DESKTOP-RT242MK\\SQLEXPRESS; database=SistemaFinanceiro12345; Integrated Security=true;User ID=sa;Password=Core@2023;TrustServerCertificate=True;";
 
             //return "Data Source=DESKTOP-RT242MK;Initial Catalog=FINANCEIRO_2023;Integrated Security=True"; // Evitar
        }
