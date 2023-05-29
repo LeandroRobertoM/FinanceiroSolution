@@ -43,5 +43,9 @@ namespace FinanceiroSolution.Domain.Servicos
                 await _interfaceDespesa.Update(despesa);
         }
 
+        public Task<object> CarregaGraficos(string emailUsuario)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
