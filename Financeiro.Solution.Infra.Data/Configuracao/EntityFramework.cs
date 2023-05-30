@@ -2,6 +2,7 @@
 using Financeiro.Solution.Infra.Data.Migrations.Context;
 using FinanceiroSolution.Domain.Entidades;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Protocols;
@@ -28,11 +29,10 @@ namespace Financeiro.Solution.Infra.Data.Configuracao
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseSqlServer(ObterStringConexao());
+                optionsBuilder.UseSqlServer(ObterStringConexao3());
                 base.OnConfiguring(optionsBuilder);
             }
         }
-
 
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -53,6 +53,13 @@ namespace Financeiro.Solution.Infra.Data.Configuracao
 
         }
 
+        public string ObterStringConexao3()
+        {
+            return "Data Source=DESKTOP-RT242MK;Initial Catalog=SistemaFinanceiro12345;Integrated Security=False;User ID=sa;Password=Core@2023;Connect Timeout=15;Encrypt=False;TrustServerCertificate=False";
+
+            //return "Data Source=NBQSP-FC693;Initial Catalog=FINANCEIRO_2023;Integrated Security=True"; // Evitar
+        }
+
 
         public string ObterStringConexao2()
         {
@@ -69,12 +76,33 @@ namespace Financeiro.Solution.Infra.Data.Configuracao
 
         }
 
-       public string ObterStringConexao()
-       {
-            return @"server=DESKTOP-RT242MK\\SQLEXPRESS; database=SistemaFinanceiro12345; Integrated Security=true;User ID=sa;Password=Core@2023;TrustServerCertificate=True;";
+        public string ObterStringConexao()
+        {
+            string connectionString = @"server=DESKTOP-RT242MK\\SQLEXPRESS; database=SistemaFinanceiro12345; Integrated Security=true;User ID=sa;Password=Core@2023;TrustServerCertificate=True;";
 
-            //return "Data Source=DESKTOP-RT242MK;Initial Catalog=FINANCEIRO_2023;Integrated Security=True"; // Evitar
-       }
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    // Realize as operações de banco de dados aqui
+
+                    // Retorne a string de conexão somente se a conexão for aberta com sucesso
+                    return connection.ConnectionString;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Faça algo com a exceção, como registrar ou tratar o erro
+                Console.WriteLine("Ocorreu um erro ao conectar ao banco de dados: " + ex.Message);
+                // Ou, se estiver usando o logging do ASP.NET Core:
+                // _logger.LogError(ex, "Ocorreu um erro ao conectar ao banco de dados");
+
+                // Retorne um valor padrão ou lance a exceção novamente, dependendo do que for apropriado para sua aplicação
+                return string.Empty; // ou outro valor padrão
+            }
+        }
 
     }
 }
