@@ -35,7 +35,17 @@ namespace Financeiro.Solution.Infra.Data.Repositorio.Generics
 
             var query = $"INSERT INTO {typeof(T).Name}s ({fieldNames}) VALUES ({parameterNames})";
 
-            await db.ExecuteAsync(query, obj);
+            var parameters = new DynamicParameters(obj);
+
+            try
+            {
+                await db.ExecuteAsync(query, parameters);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ocorreu um erro: " + ex.Message);
+                // Ou exiba a mensagem em uma caixa de diálogo, logue o erro, etc.
+            }
         }
 
         public async Task<List<T>> GetAll()
