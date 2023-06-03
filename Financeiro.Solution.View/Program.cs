@@ -44,16 +44,16 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.R
 // INTERFACE E REPOSITORIO
 builder.Services.AddSingleton<InterfaceCategoria, CategoriaRepository>();
 builder.Services.AddSingleton<InterfaceDespesa, DespesaRepository>();
-//builder.Services.AddSingleton<InterfaceSistemaFinanceiro, SistemaFinanceiroRepository>();
-//builder.Services.AddSingleton<InterfaceUserSistemaFinanceiro, UsuarioSistemaFinanceiroRepository>();
+builder.Services.AddSingleton<InterfaceSistemaFinanceiro, SistemaFinanceiroRepository>();
+builder.Services.AddSingleton<InterfaceUserSistemaFinanceiro, UsuarioSistemaFinanceiroRepository>();
 
 
 
 // SERVIÇO DOMINIO
-//builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
-//builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
-//builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
-//builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
+builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
+builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
+builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
+builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
