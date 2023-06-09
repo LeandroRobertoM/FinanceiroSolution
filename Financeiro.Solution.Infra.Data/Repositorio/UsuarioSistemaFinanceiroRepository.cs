@@ -16,12 +16,15 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
         private readonly DapperContext _context;
 
 
+
+
         public UsuarioSistemaFinanceiroRepository(DapperContext context) : base(context)
         {
-
+            _context = context;
         }
 
-    
+
+
 
         public async Task<IList<UsuarioSistemaFinanceiro>> ListarUsuariosSistema(int Id)
         {

@@ -8,7 +8,7 @@ namespace FinanceiroSolution.Domain.Entidades
 {
     public class SistemaFinanceiro : Base
     {
-        public int IdSistemaFinanceiro { get; set; }
+        public int Id { get; set; }
         public string Nome { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
@@ -17,10 +17,10 @@ namespace FinanceiroSolution.Domain.Entidades
         public int MesCopia { get; set; }
         public int AnoCopia { get; set; }
 
-        public SistemaFinanceiro(int IdSistemaFinanceiro, string nome, int mes, int ano, int diaFechamento,
+        public SistemaFinanceiro(int Id, string nome, int mes, int ano, int diaFechamento,
             bool gerarCopiaDespesa, int mesCopia, int anoCopia)
         {
-            this.IdSistemaFinanceiro = IdSistemaFinanceiro;
+            this.Id = Id;
             this.Nome = nome;
             this.Mes = mes;
             this.Ano = ano;

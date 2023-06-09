@@ -22,7 +22,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
 
         }
 
-        public async Task<IList<SistemaFinanceiro>>ListaSistemasUsuario(string emailUsuario)
+        public async Task<IList<SistemaFinanceiro>> ListaSistemasUsuario(string emailUsuario)
         {
 
             //Ajustar esta Query
@@ -49,6 +49,6 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             }
 
         }
-
+ 
     }
 }
