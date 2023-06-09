@@ -10,7 +10,7 @@ namespace FinanceiroSolution.Domain.Interfaces.InterfaceServicos
     public interface ISistemaFinanceiroServico
     {
         Task AdicionarSistemaFinanceiro(SistemaFinanceiro sistemaFinanceiro);
-        Task AtualizarDespesa(SistemaFinanceiro sistemaFinanceiro);
+        Task AtualizarSistemaFinanceiro(SistemaFinanceiro sistemaFinanceiro);
         Task<object> CarregaGraficos(string emailUsuario);
     }
 }

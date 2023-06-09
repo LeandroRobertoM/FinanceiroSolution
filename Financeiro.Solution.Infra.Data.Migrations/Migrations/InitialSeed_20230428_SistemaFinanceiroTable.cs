@@ -15,27 +15,27 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
         public override void Down()
         {
             Delete.Table("SistemaFinanceiro");
+          
 
         }
 
         public override void Up()
         {
             Create.Table("SistemaFinanceiro")
-                .WithColumn("IdSistemaFinanceiro").AsGuid().NotNullable().PrimaryKey()
-                .WithColumn("IdUser").AsGuid().NotNullable()
-                .WithColumn("Valor").AsDecimal().NotNullable()
-                .WithColumn("Mes").AsInt32().NotNullable()
-                .WithColumn("Ano").AsInt32().NotNullable()
-                .WithColumn("TipoDespesa").AsInt16().NotNullable()
-                .WithColumn("DataCadastro").AsDateTime().NotNullable()
-                .WithColumn("DataPagamento").AsDateTime().NotNullable()
-                .WithColumn("DataVencimento").AsDateTime().NotNullable()
-                .WithColumn("Pago").AsBoolean().NotNullable()
-                .WithColumn("DespesaAtrasada").AsBoolean().NotNullable()
-                .WithColumn("categoriaId").AsGuid().NotNullable().ForeignKey("Categoria", "IdCategoria");
+       .WithColumn("Id").AsInt32().Identity().PrimaryKey()
+       .WithColumn("Mes").AsInt32().NotNullable()
+       .WithColumn("Ano").AsInt32().NotNullable()
+       .WithColumn("DiaFechamento").AsInt32().NotNullable()
+       .WithColumn("GerarCopiaDespesa").AsBoolean().NotNullable()
+       .WithColumn("MesCopia").AsInt32().NotNullable()
+       .WithColumn("AnoCopia").AsInt32().NotNullable()
+       .WithColumn("Nome").AsString().NotNullable();
+
         }
     }
 }
+  
+
 
 
 

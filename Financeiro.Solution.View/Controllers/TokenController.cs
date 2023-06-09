@@ -39,7 +39,7 @@ namespace Financeiro.Solution.View.Controllers
             {
                 var token = new TokenJWTBuilder()
                   .AddSecurityKey(JwtSecurityKey.Create("Secret_Key-12345678"))
-                  .AddSubject("Canal Dev Net Core")
+                  .AddSubject("Sistema Financeiro Core")
                   .AddIssuer("Teste.Securiry.Bearer")
                   .AddAudience("Teste.Securiry.Bearer")
                   .AddClaim("UsuarioAPINumero", "1")

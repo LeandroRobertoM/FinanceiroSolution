@@ -1,5 +1,6 @@
 ﻿using Financeiro.Solution.Infra.Data.Migrations.Context;
 using Financeiro.Solution.Infra.Data.Migrations.Migrations;
+using Financeiro.Solution.Infra.Data.Repositorio;
 using FluentMigrator.Runner;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,10 @@ namespace Financeiro.Solution.View
         {
             services.AddSingleton<DapperContext>();
             services.AddSingleton<Database>();
+
+            
+            // para poder Registrar UsuarioSistemaFinanceiroRepository como um serviço
+            services.AddScoped<UsuarioSistemaFinanceiroRepository>(); 
 
             services.AddLogging(c => c.AddFluentMigratorConsole())
                 .AddFluentMigratorCore()

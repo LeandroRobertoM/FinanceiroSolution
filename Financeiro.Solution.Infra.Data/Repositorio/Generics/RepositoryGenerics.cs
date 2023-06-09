@@ -29,11 +29,11 @@ namespace Financeiro.Solution.Infra.Data.Repositorio.Generics
         public async Task Add(T obj)
         {
             using IDbConnection db = _context.CreateConnection();
-            var properties = typeof(T).GetProperties();
+            var properties = typeof(T).GetProperties().Where(p => p.Name != "NomePropriedade" && p.Name != "mensagem" && p.Name != "Id");
             var fieldNames = string.Join(", ", properties.Select(p => p.Name));
             var parameterNames = string.Join(", ", properties.Select(p => "@" + p.Name));
 
-            var query = $"INSERT INTO {typeof(T).Name}s ({fieldNames}) VALUES ({parameterNames})";
+            var query = $"INSERT INTO {typeof(T).Name} ({fieldNames}) VALUES ({parameterNames})";
 
             var parameters = new DynamicParameters(obj);
 
@@ -51,25 +51,25 @@ namespace Financeiro.Solution.Infra.Data.Repositorio.Generics
         public async Task<List<T>> GetAll()
         {
             using IDbConnection db = _context.CreateConnection();
-            return (List<T>)await db.QueryAsync<T>($"SELECT * FROM {typeof(T).Name}s");
+            return (List<T>)await db.QueryAsync<T>($"SELECT * FROM {typeof(T).Name}");
         }
 
         public async Task<T> GetById(int id)
         {
             using IDbConnection db = _context.CreateConnection();
-            return await db.QueryFirstOrDefaultAsync<T>($"SELECT * FROM {typeof(T).Name}s WHERE Id = @id", new { id });
+            return await db.QueryFirstOrDefaultAsync<T>($"SELECT * FROM {typeof(T).Name} WHERE Id = @id", new { id });
         }
 
         public async Task Delete(T obj)
         {
             using IDbConnection db = _context.CreateConnection();
-            await db.ExecuteAsync($"DELETE FROM {typeof(T).Name}s WHERE Id = @id", new { obj });
+            await db.ExecuteAsync($"DELETE FROM {typeof(T).Name} WHERE Id = @id", new { obj });
         }
 
         public async Task Update(T obj)
         {
             using IDbConnection db = _context.CreateConnection();
-            await db.ExecuteAsync($"UPDATE {typeof(T).Name}s SET property1 = @property1, property2 = @property2 WHERE Id = @id", obj);
+            await db.ExecuteAsync($"UPDATE {typeof(T).Name} SET property1 = @property1, property2 = @property2 WHERE Id = @id", obj);
         }
     }
 

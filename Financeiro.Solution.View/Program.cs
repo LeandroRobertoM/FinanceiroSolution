@@ -91,7 +91,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Add services to the container.
 
 
-builder.Services.AddAuthentication();
+//builder.Services.AddAuthentication();
 
 var app = builder.Build();
 
@@ -115,8 +115,11 @@ x.AllowAnyOrigin()
 
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
+// testes de autenticacao 
 app.UseAuthentication();
+app.UseAuthorization();
+
+
 app.MapControllers();
 app.Run();
 
