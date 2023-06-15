@@ -29,13 +29,20 @@ namespace Financeiro.Solution.Infra.Data.Repositorio.Generics
         public async Task Add(T obj)
         {
             using IDbConnection db = _context.CreateConnection();
-            var properties = typeof(T).GetProperties().Where(p => p.Name != "NomePropriedade" && p.Name != "mensagem" && p.Name != "Id");
+            var properties = typeof(T).GetProperties().Where(p => p.Name != "NomePropriedade" && p.Name != "mensagem" && p.Name != "Id"&& p.Name!= "SistemaFinanceiro");
+
             var fieldNames = string.Join(", ", properties.Select(p => p.Name));
             var parameterNames = string.Join(", ", properties.Select(p => "@" + p.Name));
 
             var query = $"INSERT INTO {typeof(T).Name} ({fieldNames}) VALUES ({parameterNames})";
 
-            var parameters = new DynamicParameters(obj);
+            var parameters = new DynamicParameters();
+
+            foreach (var property in properties)
+            {
+                var value = property.GetValue(obj);
+                parameters.Add(property.Name, value);
+            }
 
             try
             {
@@ -47,7 +54,6 @@ namespace Financeiro.Solution.Infra.Data.Repositorio.Generics
                 // Ou exiba a mensagem em uma caixa de diálogo, logue o erro, etc.
             }
         }
-
         public async Task<List<T>> GetAll()
         {
             using IDbConnection db = _context.CreateConnection();
