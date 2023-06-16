@@ -43,9 +43,32 @@ namespace FinanceiroSolution.Domain.Servicos
                 await _interfaceDespesa.Update(despesa);
         }
 
-        public Task<object> CarregaGraficos(string emailUsuario)
+        public async Task<object> CarregaGraficos(string emailUsuario)
         {
-            throw new NotImplementedException();
+            var despesasUsuario = await _interfaceDespesa.ListarDespesasUsuario(emailUsuario);
+            var despesasAnterior = await _interfaceDespesa.ListarDespesasNaoPagasMesesAnterior(emailUsuario);
+            
+            var desspesas_naoPagasMeses = despesasAnterior.Any() ?
+            despesasAnterior.ToList().Sum(x => x.Valor) : 0;
+
+            var despesas_pagas = despesasUsuario.Where(d => d.Pago && d.TipoDespesa == Enums.EnumTipoDespesa.Contas)
+                .Sum(x => x.Valor);
+
+            var despesas_pendentes = despesasUsuario.Where(d => !d.Pago && d.TipoDespesa == Enums.EnumTipoDespesa.Contas)
+                .Sum(x => x.Valor);
+
+            var investimentos = despesasUsuario.Where(d => d.TipoDespesa == Enums.EnumTipoDespesa.Contas)
+                .Sum(x => x.Valor);
+
+            return new
+            {
+                sucesso = "OK",
+                despesas_pagas= despesas_pagas,
+                despesas_pendentes= despesas_pendentes,
+                desspesas_naoPagasMeses= desspesas_naoPagasMeses,
+                investimentos= investimentos
+            };
+
         }
     }
 }
