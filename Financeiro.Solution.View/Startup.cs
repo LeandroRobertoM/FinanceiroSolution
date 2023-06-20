@@ -8,7 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
+using Serilog;
+using Serilog.Events;
 using System.Threading.Tasks;
 
 namespace Financeiro.Solution.View
@@ -25,20 +26,51 @@ namespace Financeiro.Solution.View
 
         public void ConfigureServices(IServiceCollection services)
         {
+
+
             services.AddSingleton<DapperContext>();
             services.AddSingleton<Database>();
 
-            
+
             // para poder Registrar UsuarioSistemaFinanceiroRepository como um serviço
-            services.AddScoped<UsuarioSistemaFinanceiroRepository>(); 
+            services.AddScoped<UsuarioSistemaFinanceiroRepository>();
 
             services.AddLogging(c => c.AddFluentMigratorConsole())
                 .AddFluentMigratorCore()
                 .ConfigureRunner(c => c.AddSqlServer2012()
                     .WithGlobalConnectionString(Configuration.GetConnectionString("SqlConnection"))
                     .ScanIn(Assembly.GetExecutingAssembly()).For.Migrations());
-                     services.AddControllers();
+            services.AddControllers();
+
+
+        }
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            // Configurar o Serilog
+            Log.Logger = new LoggerConfiguration()
+                .ReadFrom.Configuration(Configuration)
+                .CreateLogger();
+
+            app.UseSerilogRequestLogging(); // Adicionar o middleware do Serilog para registrar as requisições HTTP
+
+            // Restante da configuração do pipeline do ASP.NET Core
+
+            app.UseRouting();
+
+            app.UseAuthorization();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }
+
 

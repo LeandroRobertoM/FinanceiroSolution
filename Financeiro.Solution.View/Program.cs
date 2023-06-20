@@ -21,7 +21,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
-
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
@@ -54,6 +54,8 @@ builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
 builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
 builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
 builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
+
+
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -92,6 +94,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 
 //builder.Services.AddAuthentication();
+
+// Processo geração de LOG
+
+var logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .Enrich.FromLogContext()
+    .CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
