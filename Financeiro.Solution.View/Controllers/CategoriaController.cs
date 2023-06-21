@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Core;
+using Newtonsoft.Json;
+using Microsoft.Data.SqlClient;
 
 namespace Financeiro.Solution.View.Controllers
 {
@@ -32,7 +34,7 @@ namespace Financeiro.Solution.View.Controllers
         {
             try
             {
-                _logger.LogInformation("Executando o método ListarCategoriasUsuario");
+                _logger.LogInformation("Executando o método Listar Categoria por Conta de Email:{emailUsuario}",emailUsuario);
 
                 var result = await _InterfaceCategoria.ListarCategoriasUsuario(emailUsuario);
 
@@ -51,11 +53,13 @@ namespace Financeiro.Solution.View.Controllers
         {
             try
             {
-                _logger.LogInformation("Executando o método AdicionarCategoria");
-
+                _logger.LogInformation("Envelope dos campos: Nome: {Nome}, Descrição: {Descricao}", categoria.Nome);
+                _logger.LogInformation("Envelope processado: {Envelope}", JsonConvert.SerializeObject(categoria));
                 await _ICategoriaServico.AdicionarCategoria(categoria);
 
                 return categoria;
+
+                
             }
             catch (Exception ex)
             {

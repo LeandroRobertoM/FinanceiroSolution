@@ -1,15 +1,10 @@
-﻿
-using Dapper;
+﻿using Dapper;
 using Financeiro.Solution.Infra.Data.Migrations.Context;
 using Financeiro.Solution.Infra.Data.Repositorio.Generics;
 using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.ICategoria;
-using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,23 +15,15 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
     {
         private readonly DapperContext _context;
 
-
         public CategoriaRepository(DapperContext context) : base(context)
         {
-        }
+            _context = context;
 
-        public Task<Categoria> GetEntityById(int Id)
-        {
-            throw new NotImplementedException();
         }
-
-        public Task<List<Categoria>> List()
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IList<Categoria>> ListarCategoriasUsuario(string emailUsuario)
         {
+
+            //Ajustar esta Query
             try
             {
                 using (var connection = _context.CreateConnection())
@@ -58,6 +45,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
                 Console.WriteLine($"Erro ao listar categorias do usuário: {ex.Message}");
                 throw;
             }
+
         }
     }
 }

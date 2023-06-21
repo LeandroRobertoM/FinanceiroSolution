@@ -34,6 +34,9 @@ namespace Financeiro.Solution.View
 
             // para poder Registrar UsuarioSistemaFinanceiroRepository como um serviço
             services.AddScoped<UsuarioSistemaFinanceiroRepository>();
+            services.AddScoped<CategoriaRepository>();
+            services.AddScoped<DespesaRepository>();
+            
 
             services.AddLogging(c => c.AddFluentMigratorConsole())
                 .AddFluentMigratorCore()

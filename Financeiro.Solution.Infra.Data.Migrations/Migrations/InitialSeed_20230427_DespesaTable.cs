@@ -20,7 +20,7 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
         public override void Up()
         {
             Create.Table("Despesa")
-                .WithColumn("IdDespesaw").AsGuid().NotNullable().PrimaryKey()
+                .WithColumn("IdDespesa").AsInt32().Identity().PrimaryKey()
                 .WithColumn("IdUser").AsGuid().NotNullable()
                 .WithColumn("Valor").AsDecimal().NotNullable()
                 .WithColumn("Mes").AsInt32().NotNullable()
@@ -32,7 +32,7 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
                 .WithColumn("DataVencimento").AsDateTime().NotNullable()
                 .WithColumn("Pago").AsBoolean().NotNullable()
                 .WithColumn("DespesaAtrasada").AsBoolean().NotNullable()
-                .WithColumn("categoriaId").AsGuid().NotNullable().ForeignKey("Categoria", "IdCategoria");
+                .WithColumn("categoriaId").AsInt32().NotNullable().ForeignKey("Categoria", "IdCategoria");
         }
     }
 }

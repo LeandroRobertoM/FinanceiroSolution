@@ -1,5 +1,5 @@
 ﻿using FinanceiroSolution.Domain.Entidades;
-using FinanceiroSolution.Domain.Interfaces.Generics;
+using FinanceiroSolution.Domain.Generics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
