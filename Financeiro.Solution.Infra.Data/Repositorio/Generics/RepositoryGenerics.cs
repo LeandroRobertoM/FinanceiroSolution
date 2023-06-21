@@ -29,7 +29,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio.Generics
         public async Task Add(T obj)
         {
             using IDbConnection db = _context.CreateConnection();
-            var properties = typeof(T).GetProperties().Where(p => p.Name != "NomePropriedade" && p.Name != "mensagem" && p.Name != "Id"&& p.Name!= "SistemaFinanceiro");
+            var properties = typeof(T).GetProperties().Where(p => p.Name != "NomePropriedade" && p.Name != "mensagem" && p.Name != "Id"&& p.Name!= "SistemaFinanceiro"&& p.Name != "IdCategoria");
 
             var fieldNames = string.Join(", ", properties.Select(p => p.Name));
             var parameterNames = string.Join(", ", properties.Select(p => "@" + p.Name));

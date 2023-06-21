@@ -21,7 +21,7 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
         public override void Up()
         {
                  Create.Table("Categoria")
-                .WithColumn("IdCategoria").AsGuid().NotNullable().PrimaryKey()
+                .WithColumn("IdCategoria").AsInt32().Identity().PrimaryKey()
                 .WithColumn("Nome").AsString(50).NotNullable();
         }
     }
