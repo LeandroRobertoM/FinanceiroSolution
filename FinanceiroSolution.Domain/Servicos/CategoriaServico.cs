@@ -21,7 +21,7 @@ namespace FinanceiroSolution.Domain.Servicos
         public async Task AdicionarCategoria(Categoria catagoria)
         {
             
-                await _interfaceCategoria.Add(catagoria);
+                await _interfaceCategoria.Adicionar(catagoria);
         }
 
         public async Task AtualizarCategoria(Categoria catagoria)

@@ -11,5 +11,6 @@ namespace FinanceiroSolution.Domain.Interfaces.ICategoria
     public interface InterfaceCategoria : InterfaceGeneric<Categoria>
     {
         Task<IList<Categoria>> ListarCategoriasUsuario(string emailUsuario);
+        Task Adicionar(Categoria categoria);
     }
 }
