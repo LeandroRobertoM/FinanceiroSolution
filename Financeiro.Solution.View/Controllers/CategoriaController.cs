@@ -9,6 +9,7 @@ using Serilog;
 using Serilog.Core;
 using Newtonsoft.Json;
 using Microsoft.Data.SqlClient;
+using Financeiro.Solution.View.Models;
 
 namespace Financeiro.Solution.View.Controllers
 {
@@ -49,15 +50,29 @@ namespace Financeiro.Solution.View.Controllers
 
         [HttpPost("/api/AdicionarCategoria")]
         [Produces("application/json")]
-        public async Task<object> AdicionarCategoria(Categoria categoria)
+        public async Task<object> AdicionarCategoria(CategoriaViewModel categoriaViewModel)
         {
             try
             {
-                _logger.LogInformation("Envelope dos campos: Nome: {Nome}, Descrição: {Descricao}", categoria.Nome);
-                _logger.LogInformation("Envelope processado: {Envelope}", JsonConvert.SerializeObject(categoria));
-                await _ICategoriaServico.AdicionarCategoria(categoria);
+                _logger.LogInformation("Processo de pegar a variavel do ID tipo sistema{SistemaID}", categoriaViewModel.IdSistemaFinanceiro);
+                _logger.LogInformation("Envelope dos campos: Nome: {Nome}, Descrição: {SistemaID}", categoriaViewModel.Nome);
+                _logger.LogInformation("Envelope processado: {Envelope}", JsonConvert.SerializeObject(categoriaViewModel));
 
-                return categoria;
+                Categoria Novacategoria = new Categoria
+                {
+                    Nome = categoriaViewModel.Nome,
+                    IdSistema = categoriaViewModel.IdSistemaFinanceiro
+                };
+
+                Novacategoria.SistemaFinanceiro = null;
+
+                _logger.LogInformation("Depois de alterar Novacategoria: {Envelope}", JsonConvert.SerializeObject(Novacategoria));
+
+                await _ICategoriaServico.AdicionarCategoria(Novacategoria);
+
+                
+
+                return Novacategoria;
 
                 
             }

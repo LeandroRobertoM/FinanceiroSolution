@@ -20,19 +20,50 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             _context = context;
 
         }
+
+        public  async Task Adicionar(Categoria categoria)
+        {
+            try
+            {
+                using (var connection = _context.CreateConnection())
+                {
+                    var properties = typeof(Categoria).GetProperties().Where(p => p.Name != "IdCategoria" && p.Name != "SistemaFinanceiro");
+
+                    var fieldNames = string.Join(", ", properties.Select(p => p.Name));
+                    var parameterNames = string.Join(", ", properties.Select(p => "@" + p.Name));
+
+                    var query = $"INSERT INTO {typeof(Categoria).Name} ({fieldNames}) VALUES ({parameterNames})";
+
+                    var parameters = new DynamicParameters();
+
+                    foreach (var property in properties)
+                    {
+                        var value = property.GetValue(categoria);
+                        parameters.Add(property.Name, value);
+                    }
+
+                    await connection.ExecuteAsync(query, parameters);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ocorreu um erro: " + ex.Message);
+                // Ou exiba a mensagem em uma caixa de diálogo, logue o erro, etc.
+            }
+        }
         public async Task<IList<Categoria>> ListarCategoriasUsuario(string emailUsuario)
         {
 
-            //Ajustar esta Query
+            //Ajustar esta Query falta um referencia do banco de daos de categoria com sistema financeiro. 
             try
             {
                 using (var connection = _context.CreateConnection())
                 {
                     string query = @"
                     SELECT c.*
-                    FROM SistemaFinanceiro s
-                    JOIN Categoria c ON s.Id = c.IdSistema
-                    JOIN UsuarioSistemaFinanceiro us ON s.Id = us.IdSistema
+                    FROM Categoria c
+                    INNER JOIN SistemaFinanceiro s ON c.IdSistema = s.Id
+                    INNER JOIN UsuarioSistemaFinanceiro us ON s.Id = us.IdSistema
                     WHERE us.EmailUsuario = @EmailUsuario AND us.SistemaAtual = 1";
 
                     var parametros = new { EmailUsuario = emailUsuario };

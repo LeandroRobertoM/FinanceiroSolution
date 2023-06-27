@@ -53,7 +53,7 @@ namespace Financeiro.Solution.View.Controllers
         }
 
 
-        [HttpPut("/api/ObterDespesa")]
+        [HttpGet("/api/ObterDespesa")]
         [Produces("application/json")]
         public async Task<object> ObterDespesa(int id)
         {
