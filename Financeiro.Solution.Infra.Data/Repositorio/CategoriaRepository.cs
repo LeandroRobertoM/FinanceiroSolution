@@ -3,6 +3,7 @@ using Financeiro.Solution.Infra.Data.Migrations.Context;
 using Financeiro.Solution.Infra.Data.Repositorio.Generics;
 using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.ICategoria;
+using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,13 +28,12 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             {
                 using (var connection = _context.CreateConnection())
                 {
-                    var properties = typeof(Categoria).GetProperties().Where(p => p.Name != "IdCategoria" && p.Name != "SistemaFinanceiro");
+                    var properties = typeof(Categoria).GetProperties().Where(p =>  p.Name != "mensagem" && p.Name != "Id" && p.Name != "IdCategoria" && p.Name != "IdCategoria" && p.Name != "SistemaFinanceiro");
+
 
                     var fieldNames = string.Join(", ", properties.Select(p => p.Name));
                     var parameterNames = string.Join(", ", properties.Select(p => "@" + p.Name));
-
                     var query = $"INSERT INTO {typeof(Categoria).Name} ({fieldNames}) VALUES ({parameterNames})";
-
                     var parameters = new DynamicParameters();
 
                     foreach (var property in properties)
@@ -45,7 +45,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
                     await connection.ExecuteAsync(query, parameters);
                 }
             }
-            catch (Exception ex)
+            catch (SqlException ex)
             {
                 Console.WriteLine("Ocorreu um erro: " + ex.Message);
                 // Ou exiba a mensagem em uma caixa de diálogo, logue o erro, etc.

@@ -52,35 +52,32 @@ namespace Financeiro.Solution.View.Controllers
         [Produces("application/json")]
         public async Task<object> AdicionarCategoria(CategoriaViewModel categoriaViewModel)
         {
+            _logger.LogInformation("Processo de pegar a variavel do ID tipo sistema{SistemaID}", categoriaViewModel.IdSistemaFinanceiro);
+            _logger.LogInformation("Envelope dos campos: Nome: {Nome}, Descrição: {SistemaID}", categoriaViewModel.Nome);
+            _logger.LogInformation("Envelope processado: {Envelope}", JsonConvert.SerializeObject(categoriaViewModel));
+
+            Categoria Novacategoria = new Categoria
+            {
+                Nome = categoriaViewModel.Nome,
+                IdSistema = categoriaViewModel.IdSistemaFinanceiro
+            };
+
             try
             {
-                _logger.LogInformation("Processo de pegar a variavel do ID tipo sistema{SistemaID}", categoriaViewModel.IdSistemaFinanceiro);
-                _logger.LogInformation("Envelope dos campos: Nome: {Nome}, Descrição: {SistemaID}", categoriaViewModel.Nome);
-                _logger.LogInformation("Envelope processado: {Envelope}", JsonConvert.SerializeObject(categoriaViewModel));
-
-                Categoria Novacategoria = new Categoria
-                {
-                    Nome = categoriaViewModel.Nome,
-                    IdSistema = categoriaViewModel.IdSistemaFinanceiro
-                };
-
                 Novacategoria.SistemaFinanceiro = null;
-
                 _logger.LogInformation("Depois de alterar Novacategoria: {Envelope}", JsonConvert.SerializeObject(Novacategoria));
-
                 await _ICategoriaServico.AdicionarCategoria(Novacategoria);
 
-                
+                return Ok(new Resposta(200, "Criado com sucesso!"));
 
-                return Novacategoria;
-
-                
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro ao executar o método AdicionarCategoria");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Erro interno no servidor");
+                _logger.LogError(ex, "Ocorreu um erro: " + ex.Message);
+                return StatusCode(500, new Resposta(500, ex.Message));
             }
+
+   
         }
     }
 }
