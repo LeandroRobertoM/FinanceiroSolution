@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace FinanceiroSolution.Domain.Entidades
 {
-    public class Despesa
+    public class Despesa : Base
     {
         public int IdUser { get; set; }
 
@@ -18,6 +18,8 @@ namespace FinanceiroSolution.Domain.Entidades
         public int Ano { get; set; }
         public EnumTipoDespesa TipoDespesa { get; set; }
         public DateTime DataCadastro { get; set; }
+
+        public DateTime DataAlteracao { get; set; }
         public DateTime DataPagamento { get; set; }
         public DateTime DataVencimento { get; set; }
         public bool Pago { get; set; }

@@ -15,7 +15,9 @@ namespace FinanceiroSolution.Domain.Entidades
         public bool Administrador { get; set; }
 
         public bool SistemaAtual { get; set; }
-        public SistemaFinanceiro SistemaFinanceiro { get; set; }
+        public int IdSistema { get; set; }
+
+        public virtual SistemaFinanceiro SistemaFinanceiro { get; set; }
 
 
         public UsuarioSistemaFinanceiro(SistemaFinanceiro sistemaFinanceiro, int id, string emailUsuario, bool administrador, bool sistemaAtual)
@@ -25,8 +27,9 @@ namespace FinanceiroSolution.Domain.Entidades
             this.Id = id;
             this.Administrador = administrador;
             this.SistemaAtual = sistemaAtual;
+            this.IdSistema = SistemaFinanceiro.Id;
 
         }
-        public UsuarioSistemaFinanceiro() { }
+       public UsuarioSistemaFinanceiro() { }
     }
 }
