@@ -22,7 +22,7 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Extensions
 
                 try
                 {
-                    databaseService.CreateDatabase("SistemaFinanceiro");
+                    databaseService.CreateDatabase("SistemaFinanceiro12345");
 
 
                     migrationService.ListMigrations();
@@ -30,6 +30,14 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Extensions
                     migrationService.MigrateUp(20230427);
                     migrationService.MigrateUp(20230428);
                     migrationService.MigrateUp(20230429);
+                    migrationService.MigrateUp(2023051401);
+                    migrationService.MigrateUp(2023051402);
+                    migrationService.MigrateUp(2023051403);
+                    migrationService.MigrateUp(2023051405);
+                    migrationService.MigrateUp(2023051406);
+                    migrationService.MigrateUp(2023051407);
+
+
                     migrationService.ListMigrations();
 
                 }

@@ -1,5 +1,5 @@
 ﻿using FinanceiroSolution.Domain.Entidades;
-using FinanceiroSolution.Domain.Interfaces.Generics;
+using FinanceiroSolution.Domain.Generics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +11,6 @@ namespace FinanceiroSolution.Domain.Interfaces.ICategoria
     public interface InterfaceCategoria : InterfaceGeneric<Categoria>
     {
         Task<IList<Categoria>> ListarCategoriasUsuario(string emailUsuario);
+        Task Adicionar(Categoria categoria);
     }
 }

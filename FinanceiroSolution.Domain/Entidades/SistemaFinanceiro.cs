@@ -6,21 +6,21 @@ using System.Threading.Tasks;
 
 namespace FinanceiroSolution.Domain.Entidades
 {
-    public class SistemaFinanceiro
+    public class SistemaFinanceiro : Base
     {
-        public int IdSistemaFinanceiro { get; set; }
+        public int Id { get; set; }
         public string Nome { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
         public int DiaFechamento { get; set; }
-        public int GerarCopiaDespesa { get; set; }
+        public bool GerarCopiaDespesa { get; set; }
         public int MesCopia { get; set; }
         public int AnoCopia { get; set; }
 
-        public SistemaFinanceiro(int IdSistemaFinanceiro, string nome, int mes, int ano, int diaFechamento,
-            int gerarCopiaDespesa, int mesCopia, int anoCopia)
+        public SistemaFinanceiro(int Id, string nome, int mes, int ano, int diaFechamento,
+            bool gerarCopiaDespesa, int mesCopia, int anoCopia)
         {
-            this.IdSistemaFinanceiro = IdSistemaFinanceiro;
+            this.Id = Id;
             this.Nome = nome;
             this.Mes = mes;
             this.Ano = ano;
