@@ -66,9 +66,16 @@ namespace Financeiro.Solution.View.Controllers
             {
                 Novacategoria.SistemaFinanceiro = null;
                 _logger.LogInformation("Depois de alterar Novacategoria: {Envelope}", JsonConvert.SerializeObject(Novacategoria));
-                await _ICategoriaServico.AdicionarCategoria(Novacategoria);
+                bool operacaoSucesso= await _ICategoriaServico.AdicionarCategoria(Novacategoria);
 
-                return Ok(new Resposta(200, "Criado com sucesso!"));
+                if (operacaoSucesso)
+                {
+                    return Ok(new Resposta(200, "Criado com sucesso!"));
+                }
+                else
+                {
+                    return StatusCode(500, new Resposta(500, "Falha ao adicionar a categoria."));
+                }
 
             }
             catch (Exception ex)

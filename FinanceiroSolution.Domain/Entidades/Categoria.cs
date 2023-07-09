@@ -17,19 +17,29 @@ namespace FinanceiroSolution.Domain.Entidades
 
         public int IdSistema { get; set; }
 
-        public Categoria(int IdCategoria, string nome, SistemaFinanceiro sistemaFinanceiro)
+        public Categoria(int idCategoria, string nome, SistemaFinanceiro sistemaFinanceiro)
         {
+            if (sistemaFinanceiro == null)
+            {
+                throw new ArgumentNullException(nameof(sistemaFinanceiro), "SistemaFinanceiro inválido");
+            }
+
             this.SistemaFinanceiro = sistemaFinanceiro;
-            this.IdCategoria = IdCategoria;
+            this.IdCategoria = idCategoria;
             this.Nome = nome;
+            this.IdSistema = sistemaFinanceiro.Id;
         }
 
-        public Categoria(int IdCategoria, string nome, int IdSistema)
+        public Categoria(int idCategoria, string nome, int idSistema)
         {
-            
-            this.IdCategoria = IdCategoria;
+            if (idSistema <= 0)
+            {
+                throw new ArgumentException("IdSistema inválido", nameof(idSistema));
+            }
+
+            this.IdCategoria = idCategoria;
             this.Nome = nome;
-            this.IdSistema = IdSistema;
+            this.IdSistema = idSistema;
         }
 
         public Categoria() { }
