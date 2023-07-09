@@ -46,7 +46,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
                     await connection.ExecuteAsync(query, parameters);
                 }
 
-                return new Resposta<bool>(true);
+                return new Resposta<bool>(true, null);
             }
             catch (SqlException ex)
             {

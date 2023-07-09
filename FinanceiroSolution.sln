@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Financeiro.Solution.Infra.Data.Migrations", "Financeiro.Solution.Infra.Data.Migrations", "{A6F25918-A933-4CDE-A8BC-0E501E900832}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Financeiro.Solution.Infra.Data", "Financeiro.Solution.Infra.Data", "{A6F25918-A933-4CDE-A8BC-0E501E900832}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Financeiro.Solution.View", "Financeiro.Solution.View", "{93A926C6-B099-49B9-95E9-AA6C540BDE70}"
 EndProject
@@ -15,7 +15,17 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Financeiro.Solution.View", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Financeiro.Solution.Infra.Data.Migrations", "Financeiro.Solution.Infra.Data.Migrations\Financeiro.Solution.Infra.Data.Migrations.csproj", "{5C60843B-3E4A-4CC6-AF16-3D23409140C6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financeiro.Solution.Infra.Data", "Financeiro.Solution.Infra.Data\Financeiro.Solution.Infra.Data.csproj", "{FBFDA122-EDA8-4782-BF4A-33E5F5DA4F74}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Financeiro.Solution.Infra.Data", "Financeiro.Solution.Infra.Data\Financeiro.Solution.Infra.Data.csproj", "{FBFDA122-EDA8-4782-BF4A-33E5F5DA4F74}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Financeiro.Solution.Testes", "Financeiro.Solution.Testes", "{EAA1B7C0-64FB-44BC-AD24-CFA5FF7670DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testes Unitários", "Testes Unitários", "{58B3E370-A745-4E5A-8410-3400FE677711}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testes de Integração", "Testes de Integração", "{4EA0A6D2-F195-45AA-A46C-8B9E5F7372F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financeiro.Solution.Dominio.Tests", "Financeiro.Solution.Dominio.Tests\Financeiro.Solution.Dominio.Tests.csproj", "{BEEF1DCC-703D-48B1-B892-08F4CEF2AD12}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financeiro.Solution.Infra.Tests", "Financeiro.Solution.Infra.Tests\Financeiro.Solution.Infra.Tests.csproj", "{F22D92DB-0200-48C0-946F-EF5C87E78324}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +49,14 @@ Global
 		{FBFDA122-EDA8-4782-BF4A-33E5F5DA4F74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FBFDA122-EDA8-4782-BF4A-33E5F5DA4F74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FBFDA122-EDA8-4782-BF4A-33E5F5DA4F74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEEF1DCC-703D-48B1-B892-08F4CEF2AD12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEEF1DCC-703D-48B1-B892-08F4CEF2AD12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEEF1DCC-703D-48B1-B892-08F4CEF2AD12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEEF1DCC-703D-48B1-B892-08F4CEF2AD12}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F22D92DB-0200-48C0-946F-EF5C87E78324}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F22D92DB-0200-48C0-946F-EF5C87E78324}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F22D92DB-0200-48C0-946F-EF5C87E78324}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F22D92DB-0200-48C0-946F-EF5C87E78324}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +66,10 @@ Global
 		{3B42B964-C40B-40BA-96AC-2A0C5DAA8D1B} = {93A926C6-B099-49B9-95E9-AA6C540BDE70}
 		{5C60843B-3E4A-4CC6-AF16-3D23409140C6} = {A6F25918-A933-4CDE-A8BC-0E501E900832}
 		{FBFDA122-EDA8-4782-BF4A-33E5F5DA4F74} = {A6F25918-A933-4CDE-A8BC-0E501E900832}
+		{58B3E370-A745-4E5A-8410-3400FE677711} = {EAA1B7C0-64FB-44BC-AD24-CFA5FF7670DD}
+		{4EA0A6D2-F195-45AA-A46C-8B9E5F7372F1} = {EAA1B7C0-64FB-44BC-AD24-CFA5FF7670DD}
+		{BEEF1DCC-703D-48B1-B892-08F4CEF2AD12} = {58B3E370-A745-4E5A-8410-3400FE677711}
+		{F22D92DB-0200-48C0-946F-EF5C87E78324} = {4EA0A6D2-F195-45AA-A46C-8B9E5F7372F1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4F2CCE48-DE27-419A-9B41-AD636DF8F48E}
