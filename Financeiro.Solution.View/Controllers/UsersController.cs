@@ -61,7 +61,7 @@ namespace Financeiro.Solution.View.Controllers
 
             if (respose_Retorn.Succeeded)
             {
-                return Ok("Usuário Adicionado!");
+                return Ok("Usuário Adicionadosss oara AZURE!");
             }
             else
             {
