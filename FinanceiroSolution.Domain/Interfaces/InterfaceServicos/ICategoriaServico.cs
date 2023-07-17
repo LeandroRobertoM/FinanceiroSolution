@@ -9,7 +9,7 @@ namespace FinanceiroSolution.Domain.Interfaces.Servicos
 {
    public interface ICategoriaServico
     {
-        Task AdicionarCategoria(Categoria categoria);
+        Task<bool> AdicionarCategoria(Categoria categoria);
         Task AtualizarCategoria(Categoria categoria);
 
 

@@ -33,7 +33,7 @@ namespace Financeiro.Solution.View.Controllers
                 string.IsNullOrWhiteSpace(login.senha) ||
                 string.IsNullOrWhiteSpace(login.cpf))
             {
-                return Ok("Falta alguns dados");
+                return Ok("Falta alguns do usuario dados");
             }
 
             var user = new ApplicationUser
@@ -61,7 +61,7 @@ namespace Financeiro.Solution.View.Controllers
 
             if (respose_Retorn.Succeeded)
             {
-                return Ok("Usuário Adicionado!");
+                return Ok("Usuário Adicionadosss oara AZURE!");
             }
             else
             {

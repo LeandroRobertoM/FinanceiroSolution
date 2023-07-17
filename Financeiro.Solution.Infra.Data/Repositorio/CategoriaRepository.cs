@@ -1,8 +1,10 @@
 ﻿using Dapper;
 using Financeiro.Solution.Infra.Data.Migrations.Context;
 using Financeiro.Solution.Infra.Data.Repositorio.Generics;
+using Financeiro.Solution.Infra.Data.Response;
 using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.ICategoria;
+using FinanceiroSolution.Domain.Interfaces.IResposta;
 using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
@@ -22,14 +24,13 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
 
         }
 
-        public  async Task Adicionar(Categoria categoria)
+        public async Task<IResposta<bool>> Adicionar(Categoria categoria)
         {
             try
             {
                 using (var connection = _context.CreateConnection())
                 {
-                    var properties = typeof(Categoria).GetProperties().Where(p =>  p.Name != "mensagem" && p.Name != "Id" && p.Name != "IdCategoria" && p.Name != "IdCategoria" && p.Name != "SistemaFinanceiro");
-
+                    var properties = typeof(Categoria).GetProperties().Where(p => p.Name != "mensagem" && p.Name != "Id" && p.Name != "IdCategoria" && p.Name != "IdCategoria");
 
                     var fieldNames = string.Join(", ", properties.Select(p => p.Name));
                     var parameterNames = string.Join(", ", properties.Select(p => "@" + p.Name));
@@ -44,13 +45,16 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
 
                     await connection.ExecuteAsync(query, parameters);
                 }
+
+                return new Resposta<bool>(true, null);
             }
             catch (SqlException ex)
             {
                 Console.WriteLine("Ocorreu um erro: " + ex.Message);
-                // Ou exiba a mensagem em uma caixa de diálogo, logue o erro, etc.
+                return new Resposta<bool>(false, ex.Message);
             }
         }
+
         public async Task<IList<Categoria>> ListarCategoriasUsuario(string emailUsuario)
         {
 
@@ -73,7 +77,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             catch (Exception ex)
             {
                 // Tratar ou relatar a exceção
-                Console.WriteLine($"Erro ao listar categorias do usuário: {ex.Message}");
+                Console.WriteLine($"Erro ao listar categorias do usuário devAzure 2: {ex.Message}");
                 throw;
             }
 
