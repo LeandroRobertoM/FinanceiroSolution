@@ -77,7 +77,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             catch (Exception ex)
             {
                 // Tratar ou relatar a exceção
-                Console.WriteLine($"Erro ao listar categorias do usuário devAzure: {ex.Message}");
+                Console.WriteLine($"Erro ao listar categorias do usuário devAzure 2: {ex.Message}");
                 throw;
             }
 
