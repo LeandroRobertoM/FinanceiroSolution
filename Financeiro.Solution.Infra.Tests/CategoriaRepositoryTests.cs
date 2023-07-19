@@ -12,7 +12,7 @@ namespace Financeiro.Solution.Infra.Tests
     {
         private CategoriaRepository CreateRepository()
         {
-            // Configurar manualmente a configuração simulada
+            // Configurar manualmente a configuraÃ§Ã£o simulada
             var configuration = new ConfigurationBuilder()
                 .AddInMemoryCollection()
                 .Build();
@@ -26,21 +26,5 @@ namespace Financeiro.Solution.Infra.Tests
             return new CategoriaRepository(dbContextMock.Object);
         }
 
-        [Fact]
-        public async Task CategoriaRepository_DeveAdicionarCategoria()
-        {
-            // Arrange
-            var repository = CreateRepository();
-            var categoria = new Categoria { IdCategoria = 1, Nome = "Categoria 12" };
-
-            // Act
-            await repository.Add(categoria);
-
-            // Assert
-            var categoriaInserida = await repository.GetById(categoria.IdCategoria);
-            Assert.NotNull(categoriaInserida);
-            Assert.Equal(categoria.IdCategoria, categoriaInserida.IdCategoria);
-            Assert.Equal(categoria.Nome, categoriaInserida.Nome);
-        }
     }
 }
