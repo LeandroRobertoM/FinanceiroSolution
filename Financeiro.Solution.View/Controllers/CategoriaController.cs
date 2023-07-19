@@ -35,7 +35,7 @@ namespace Financeiro.Solution.View.Controllers
         {
             try
             {
-                _logger.LogInformation("Executando o método Listar erros Categoria por Conta de Email:{emailUsuario}",emailUsuario);
+                _logger.LogInformation("Executandoss o método Listar erros para aparecer azure Categoria por Conta de Email:{emailUsuario}",emailUsuario);
 
                 var result = await _InterfaceCategoria.ListarCategoriasUsuario(emailUsuario);
 
