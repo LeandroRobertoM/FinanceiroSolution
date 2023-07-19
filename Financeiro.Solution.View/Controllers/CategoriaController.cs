@@ -43,7 +43,7 @@ namespace Financeiro.Solution.View.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Ocorreu um erro ao executar o método ListarCategoriasUsuario");
+                _logger.LogError(ex, "Ocorreu um erro ao executar o método ListarCategoriasUsuario testesdadada");
                 return StatusCode(StatusCodes.Status500InternalServerError, "Erro interno no servidor");
             }
         }
