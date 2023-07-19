@@ -38,35 +38,6 @@ namespace Financeiro.Solution.Dominio.Tests
             Assert.Equal(nome, categoria.Nome);
             Assert.Equal(sistemaFinanceiro, categoria.SistemaFinanceiro);
         }
-
-  /*
-       [Fact]
-       public void Categoria_DeveRetornarErroQuandoNomeInvalido()
-       {
-                  // Arrange
-           int idCategoria = 1;
-           string nome = string.Empty;
-           int idSistema = 1;
-
-                  // Act & Assert
-           Assert.Throws<ArgumentException>(() => new Categoria(idCategoria, nome, idSistema));
-
-        
-       }
-       */
-/*
-      [Fact]
-      public void Categoria_DeveRetornarErroQuandoIdSistemaInvalido()
-      {
-                  // Arrange
-           int idCategoria = 1;
-           string nome = "Categoria 1";
-           int idSistema = 0;
-
-                  // Act & Assert
-           var exception = Assert.Throws<ArgumentException>(() => new Categoria(idCategoria, nome, idSistema));
-          Assert.Equal("Mensagem de erro esperada", exception.Message);
-      } */
    }
 }
 
