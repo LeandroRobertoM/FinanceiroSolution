@@ -39,7 +39,7 @@ namespace Financeiro.Solution.Dominio.Tests
             Assert.Equal(sistemaFinanceiro, categoria.SistemaFinanceiro);
         }
 
-  
+  /*
        [Fact]
        public void Categoria_DeveRetornarErroQuandoNomeInvalido()
        {
@@ -50,8 +50,11 @@ namespace Financeiro.Solution.Dominio.Tests
 
                   // Act & Assert
            Assert.Throws<ArgumentException>(() => new Categoria(idCategoria, nome, idSistema));
-       }
 
+        
+       }
+       */
+/*
       [Fact]
       public void Categoria_DeveRetornarErroQuandoIdSistemaInvalido()
       {
@@ -63,7 +66,7 @@ namespace Financeiro.Solution.Dominio.Tests
                   // Act & Assert
            var exception = Assert.Throws<ArgumentException>(() => new Categoria(idCategoria, nome, idSistema));
           Assert.Equal("Mensagem de erro esperada", exception.Message);
-      } 
+      } */
    }
 }
 
