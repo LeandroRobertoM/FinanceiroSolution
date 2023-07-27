@@ -49,7 +49,7 @@ builder.Services.AddSingleton<InterfaceUserSistemaFinanceiro, UsuarioSistemaFina
 
 
 
-// SERVIÇO DOMINIO
+// SERVIÃ‡O DOMINIO
 builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
 builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
 builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
@@ -95,7 +95,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 //builder.Services.AddAuthentication();
 
-// Processo geração de LOG
+// Processo geraÃ§Ã£o de LOG
 
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -110,11 +110,11 @@ var app = builder.Build();
 app.MigrateDatabase();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+//if (app.Environment.IsDevelopment())
+//{
     app.UseSwagger();
     app.UseSwaggerUI();
-}
+//}
 
 
 var devClient = "http://localhost:4200";
