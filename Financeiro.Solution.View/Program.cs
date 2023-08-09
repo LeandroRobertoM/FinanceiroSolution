@@ -22,6 +22,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using Serilog;
+using Financeiro.Solution.View.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
@@ -32,6 +33,7 @@ builder.Services.AddControllers();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<EntityFramework>(options =>
@@ -109,13 +111,19 @@ var app = builder.Build();
 
 app.MigrateDatabase();
 
-// Configure the HTTP request pipeline.
-
+// Configure the HTTP request pipeline testes .
+Log.Information("Configuring Swagger passou na program. Verificar..");
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
+    app.ConfigSwagger();
     app.UseSwaggerUI();
+
+    // Log depois da configuração do Swagger
+    Log.Information("Swagger configuration completedpassou na programpassou na programpassou na program.");
 }
+
+
 
 var devClient = "http://localhost:4200";
 
