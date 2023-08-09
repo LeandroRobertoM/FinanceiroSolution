@@ -11,6 +11,7 @@ using System.Reflection;
 using Serilog;
 using Serilog.Events;
 using System.Threading.Tasks;
+using Financeiro.Solution.View.Extensions;
 
 namespace Financeiro.Solution.View
 {
@@ -30,7 +31,7 @@ namespace Financeiro.Solution.View
 
             services.AddSingleton<DapperContext>();
             services.AddSingleton<Database>();
-
+            services.AddSwagger();
 
             // para poder Registrar UsuarioSistemaFinanceiroRepository como um serviço
             services.AddScoped<UsuarioSistemaFinanceiroRepository>();
@@ -55,6 +56,11 @@ namespace Financeiro.Solution.View
                 app.UseDeveloperExceptionPage();
             }
 
+            Log.Information("Configuring Swagger...");
+        
+                app.UseSwagger();
+                app.UseSwaggerUI();
+
             // Configurar o Serilog
             Log.Logger = new LoggerConfiguration()
                 .ReadFrom.Configuration(Configuration)
@@ -62,7 +68,11 @@ namespace Financeiro.Solution.View
 
             app.UseSerilogRequestLogging(); // Adicionar o middleware do Serilog para registrar as requisições HTTP
 
-            // Restante da configuração do pipeline do ASP.NET Core
+         
+
+
+            // configurando 
+          
 
             app.UseRouting();
 
@@ -72,6 +82,8 @@ namespace Financeiro.Solution.View
             {
                 endpoints.MapControllers();
             });
+
+            app.ConfigSwagger();
         }
     }
 }

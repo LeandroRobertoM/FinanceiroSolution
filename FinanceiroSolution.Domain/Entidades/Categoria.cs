@@ -11,6 +11,7 @@ namespace FinanceiroSolution.Domain.Entidades
     {
         public int IdCategoria { get; set; }
 
+        //Comentario
         public string Nome { get; set; }
 
         public SistemaFinanceiro SistemaFinanceiro { get; set; }
