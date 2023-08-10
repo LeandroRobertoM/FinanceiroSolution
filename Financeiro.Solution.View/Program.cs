@@ -27,8 +27,12 @@ using Financeiro.Solution.View.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
 
+var configuration = builder.Configuration;
+
 startup.ConfigureServices(builder.Services);
 builder.Services.AddControllers();
+
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -109,7 +113,7 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-app.MigrateDatabase();
+app.MigrateDatabase(configuration);
 
 // Configure the HTTP request pipeline testes .
 Log.Information("Configuring Swagger passou na program. Verificar..");

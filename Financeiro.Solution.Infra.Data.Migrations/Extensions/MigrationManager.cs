@@ -1,6 +1,8 @@
 ﻿
 using Financeiro.Solution.Infra.Data.Migrations.Migrations;
 using FluentMigrator.Runner;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
@@ -13,7 +15,7 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Extensions
 {
     public static class MigrationManager
     {
-        public static IHost MigrateDatabase(this IHost host)
+        public static IHost MigrateDatabase(this IHost host, IConfiguration configuration)
         {
             using (var scope = host.Services.CreateScope())
             {
@@ -22,8 +24,10 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Extensions
 
                 try
                 {
-                    databaseService.CreateDatabase("SistemaFinanceiro12345");
-
+                    string connectionString = configuration.GetConnectionString("SqlConnection");
+                    string databaseName = new SqlConnectionStringBuilder(connectionString).InitialCatalog;
+                    //databaseService.CreateDatabase("SistemaFinanceiro12345");
+                    databaseService.CreateDatabase(databaseName);
 
                     migrationService.ListMigrations();
                     migrationService.MigrateUp(20230426);
