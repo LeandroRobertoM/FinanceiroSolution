@@ -27,10 +27,10 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
                 .WithColumn("IdSistema").AsInt32().NotNullable()
                 .WithColumn("Nome").AsString(50).NotNullable();
 
-                 Create.ForeignKey()
+               /*  Create.ForeignKey()
                 .FromTable("Categoria").ForeignColumn("IdSistema")
-                .ToTable("SistemaFinanceiro").PrimaryColumn("Id")
-                .OnDelete(Rule.Cascade);
+               // .ToTable("SistemaFinanceiro").PrimaryColumn("Id")
+                .OnDelete(Rule.Cascade);*/
         }
     }
 }
