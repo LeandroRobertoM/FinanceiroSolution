@@ -57,7 +57,7 @@ namespace Financeiro.Solution.Testes
             host.MigrateDatabase(configuration);
         }
 
-        [Fact]
+        [test]
         public async Task TestAdicionarCategoria()
         {
             Console.WriteLine("Iniciando o teste TestAdicionarCategoria");
