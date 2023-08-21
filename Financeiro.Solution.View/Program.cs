@@ -14,6 +14,7 @@ using FinanceiroSolution.Domain.Interfaces.ISistemaFinanceiro;
 using FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro;
 using FinanceiroSolution.Domain.Interfaces.Servicos;
 using FinanceiroSolution.Domain.Servicos;
+using Financeiro.Solution.Testes;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using Serilog;
 using Financeiro.Solution.View.Extensions;
+using Financeiro.Solution.Infra.Tests;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
@@ -113,6 +115,7 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+app.MigrateDatabase(configuration);
 app.MigrateDatabase(configuration);
 
 // Configure the HTTP request pipeline testes .

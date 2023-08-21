@@ -1,4 +1,4 @@
-﻿using Dapper;
+﻿ using Dapper;
 using Financeiro.Solution.Infra.Data.Migrations.Context;
 using Financeiro.Solution.Infra.Data.Repositorio.Generics;
 using Financeiro.Solution.Infra.Data.Response;
@@ -30,7 +30,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             {
                 using (var connection = _context.CreateConnection())
                 {
-                    var properties = typeof(Categoria).GetProperties().Where(p => p.Name != "mensagem" && p.Name != "Id" && p.Name != "IdCategoria" && p.Name != "IdCategoria");
+                    var properties = typeof(Categoria).GetProperties().Where(p => p.Name != "mensagem" && p.Name != "Id" && p.Name != "IdCategoria" && p.Name != "IdCategoria" && p.Name != "SistemaFinanceiro" && p.Name != "NomePropriedade");
 
                     var fieldNames = string.Join(", ", properties.Select(p => p.Name));
                     var parameterNames = string.Join(", ", properties.Select(p => "@" + p.Name));
