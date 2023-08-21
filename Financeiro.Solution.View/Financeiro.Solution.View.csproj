@@ -31,6 +31,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Financeiro.Solution.Infra.Data.Migrations\Financeiro.Solution.Infra.Data.Migrations.csproj" />
     <ProjectReference Include="..\Financeiro.Solution.Infra.Data\Financeiro.Solution.Infra.Data.csproj" />
+    <ProjectReference Include="..\Financeiro.Solution.Infra.Tests\Financeiro.Solution.Infra.Tests.csproj" />
     <ProjectReference Include="..\FinanceiroSolution.Domain\FinanceiroSolution.Domain.csproj" />
   </ItemGroup>
 
