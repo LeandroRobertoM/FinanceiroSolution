@@ -9,7 +9,7 @@ namespace FinanceiroSolution.Domain.Interfaces.Servicos
 {
     public interface IDespesaServico
     {
-        Task AdicionarDespesa(Despesa despesa);
+        Task<bool> AdicionarDespesa(Despesa despesa);
         Task AtualizarDespesa(Despesa despesa);
         Task<object> CarregaGraficos(string emailUsuario);
     }
