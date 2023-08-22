@@ -33,6 +33,8 @@ namespace Financeiro.Solution.View.Controllers
         [Produces("application/json")]
         public async Task<object> AdicionarSistemaFinanceiro(SistemaFinanceiro sistemaFinanceiro)
         {
+           //Ajustar Log
+
             await _ISistemaFinanceiroServico.AdicionarSistemaFinanceiro(sistemaFinanceiro);
 
             return Task.FromResult(sistemaFinanceiro);
