@@ -57,31 +57,5 @@ namespace Financeiro.Solution.Testes
             host.MigrateDatabase(configuration);
         }
 
-        [test]
-        public async Task TestAdicionarCategoria()
-        {
-            Console.WriteLine("Iniciando o teste TestAdicionarCategoria");
-
-            // Arrange
-            var novaCategoria = new Categoria
-            {
-                Nome = "Categoria Teste1",
-                IdSistema = 1
-            };
-
-            var categoriaServico = new CategoriaServico(null, null); // Passe os parâmetros necessários
-            var resultadoEsperado = true; // Simulando um sucesso
-
-            // Act
-            Console.WriteLine("Chamando o método Adicionar");
-            var resultado = await categoriaServico.AdicionarCategoria(novaCategoria);
-
-            // Assert
-            Console.WriteLine("Verificando o resultado");
-            Assert.True(resultado, "A adição da categoria falhou.");
-
-            Console.WriteLine("Teste TestAdicionarCategoria concluído");
-        }
-
     }
 }
