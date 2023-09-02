@@ -1,7 +1,9 @@
 ﻿using Dapper;
 using Financeiro.Solution.Infra.Data.Context;
 using Financeiro.Solution.Infra.Data.Migrations.Context;
+using Financeiro.Solution.Infra.Data.Response;
 using FinanceiroSolution.Domain.Generics;
+using FinanceiroSolution.Domain.Interfaces.IResposta;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -26,7 +28,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio.Generics
             GC.SuppressFinalize(this);
         }
 
-        public async Task Add(T obj)
+        public async Task <IResposta<bool>> Add(T obj)
         {
             using IDbConnection db = _context.CreateConnection();
            
@@ -50,12 +52,14 @@ namespace Financeiro.Solution.Infra.Data.Repositorio.Generics
             try
             {
                 await db.ExecuteAsync(query, parameters);
+                return new Resposta<bool>(true, null);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Ocorreu um erro: " + ex.Message);
-                // Ou exiba a mensagem em uma caixa de diálogo, logue o erro, etc.
+                return new Resposta<bool>(false, ex.Message);
             }
+
         }
         public async Task<List<T>> GetAll()
         {

@@ -22,7 +22,8 @@ namespace Financeiro.Solution.View.Controllers
         private readonly ICategoriaServico _ICategoriaServico;
         private readonly ILogger<CategoriaController> _logger;
 
-        public CategoriaController(InterfaceCategoria InterfaceCategoria, ICategoriaServico ICategoriaServico, ILogger<CategoriaController> logger)
+        public CategoriaController(InterfaceCategoria InterfaceCategoria, ICategoriaServico ICategoriaServico,
+            ILogger<CategoriaController> logger)
         {
             _InterfaceCategoria = InterfaceCategoria;
             _ICategoriaServico = ICategoriaServico;
