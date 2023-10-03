@@ -1,4 +1,5 @@
-﻿using FinanceiroSolution.Domain.Entidades;
+﻿using Financeiro.Solution.View.Models;
+using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.ICategoria;
 using FinanceiroSolution.Domain.Interfaces.IDespesa;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
@@ -7,6 +8,7 @@ using FinanceiroSolution.Domain.Interfaces.Servicos;
 using FinanceiroSolution.Domain.Servicos;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Financeiro.Solution.View.Controllers
 {
@@ -16,12 +18,14 @@ namespace Financeiro.Solution.View.Controllers
     {
         private readonly InterfaceDespesa _InterfaceDespesa;
         private readonly IDespesaServico _IDespesaService;
+        private readonly ILogger<DespesaController> _logger;
 
-        public DespesaController(InterfaceDespesa InterfaceDespesa, IDespesaServico IDespesaServico)
+        public DespesaController(InterfaceDespesa InterfaceDespesa, IDespesaServico IDespesaServico,
+            ILogger<DespesaController> logger)
         {
             _InterfaceDespesa = InterfaceDespesa;
             _IDespesaService = IDespesaServico;
-
+            _logger = logger;
         }
 
         [HttpGet("/api/ListarDespesasUsuario")]
@@ -35,11 +39,50 @@ namespace Financeiro.Solution.View.Controllers
 
         [HttpPost("/api/AdicionarDespesa")]
         [Produces("application/json")]
-        public async Task<object> AdicionarDespesa(Despesa despesa)
+        public async Task<object> AdicionarDespesa(DespesaViewModel despesaViewModel)
         {
-            await _IDespesaService.AdicionarDespesa(despesa);
+            
+            _logger.LogInformation("Envelope processado: {Envelope}", JsonConvert.SerializeObject(despesaViewModel));
 
-            return despesa;
+            Despesa Novadespesa = new Despesa
+            { 
+                IdUser= despesaViewModel.IdUser,
+                Nome = despesaViewModel.Nome,
+                Valor = despesaViewModel.Valor,
+                Mes = despesaViewModel.Mes,
+                Ano = despesaViewModel.Ano,
+                TipoDespesa= despesaViewModel.TipoDespesa,
+                DataCadastro= despesaViewModel.DataCadastro,
+                DataAlteracao= despesaViewModel.DataAlteracao,
+                DataPagamento= despesaViewModel.DataPagamento,
+                DataVencimento= despesaViewModel.DataVencimento,
+                Pago= despesaViewModel.Pago,
+                DespesaAtrasada= despesaViewModel.DespesaAtrasada,
+                categoriaId = despesaViewModel.Categoria.IdCategoria
+            };
+
+            try
+            {
+                
+                _logger.LogInformation("Depois de alterar Novacategoria: {Envelope}", JsonConvert.SerializeObject(Novadespesa));
+                bool operacaoSucesso = await _IDespesaService.AdicionarDespesa(Novadespesa);
+
+                if (operacaoSucesso)
+                {
+                    return Ok(new Resposta(200, "Criado com sucesso!"));
+                }
+                else
+                {
+                    return StatusCode(500, new Resposta(500, "Falha ao adicionar a categoria."));
+                }
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ocorreu um erro: " + ex.Message);
+                return StatusCode(500, new Resposta(500, ex.Message));
+            }
+         
         }
 
 

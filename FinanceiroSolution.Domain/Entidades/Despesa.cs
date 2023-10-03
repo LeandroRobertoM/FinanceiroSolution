@@ -25,6 +25,9 @@ namespace FinanceiroSolution.Domain.Entidades
         public bool Pago { get; set; }
         public bool DespesaAtrasada { get; set; }
         public Categoria Categoria { get; set; }
+
+        public int categoriaId { get; set; }
+
         public Despesa(Categoria categoria, int idUser, string nome, decimal valor, int mes, int ano, EnumTipoDespesa tipoDespesa, DateTime dataCadastro,
                        DateTime DataPagamento, DateTime DataVencimento, bool pago, bool despesaAtrasada)
         {

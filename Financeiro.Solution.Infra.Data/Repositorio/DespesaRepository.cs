@@ -7,6 +7,7 @@ using FinanceiroSolution.Domain.Interfaces.ICategoria;
 using FinanceiroSolution.Domain.Interfaces.IDespesa;
 using FinanceiroSolution.Domain.Interfaces.IResposta;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,8 +32,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             {
                 using (var connection = _context.CreateConnection())
                 {
-                    var properties = typeof(Despesa).GetProperties().Where(p => p.Name != "mensagem" && p.Name != "Id" && p.Name != "IdCategoria" && p.Name != "IdCategoria" && p.Name != "SistemaFinanceiro" && p.Name != "NomePropriedade");
-
+                    var properties = typeof(Despesa).GetProperties().Where(p => p.Name != "IdDespesa" && p.Name != "Nome" && p.Name != "IdUser" && p.Name != "mensagem" && p.Name != "Id" && p.Name != "Categoria" && p.Name != "SistemaFinanceiro" && p.Name != "NomePropriedade");
                     var fieldNames = string.Join(", ", properties.Select(p => p.Name));
                     var parameterNames = string.Join(", ", properties.Select(p => "@" + p.Name));
                     var query = $"INSERT INTO {typeof(Despesa).Name} ({fieldNames}) VALUES ({parameterNames})";

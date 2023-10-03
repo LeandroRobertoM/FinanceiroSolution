@@ -24,7 +24,7 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
         {
             try
             {
-                var query = "SELECT * FROM sys.databases WHERE name = @name";
+             var query = "SELECT * FROM sys.databases WHERE name = @name";
                 var parameters = new DynamicParameters();
                 parameters.Add("name", dbName);
 

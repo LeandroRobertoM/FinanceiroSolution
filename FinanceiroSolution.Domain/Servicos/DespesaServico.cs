@@ -43,7 +43,10 @@ namespace FinanceiroSolution.Domain.Servicos
                     }
                     else
                     {
-                        _logger.LogInformation("Categoria Despesa com sucesso!");
+                        if (resposta.OperacaoSucesso == true)
+                        {
+                            _logger.LogInformation("Despesa adicionado com sucesso!");
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -57,7 +60,7 @@ namespace FinanceiroSolution.Domain.Servicos
                     // ...
 
                 }
-                return false;
+                return true;
 
 
         }

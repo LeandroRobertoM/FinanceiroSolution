@@ -21,7 +21,6 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
         {
             Create.Table("Despesa")
                 .WithColumn("IdDespesa").AsInt32().Identity().PrimaryKey()
-                .WithColumn("IdUser").AsGuid().NotNullable()
                 .WithColumn("Valor").AsDecimal().NotNullable()
                 .WithColumn("Mes").AsInt32().NotNullable()
                 .WithColumn("Ano").AsInt32().NotNullable()
