@@ -57,30 +57,38 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
 
         public async Task<IList<Categoria>> ListarCategoriasUsuario(string emailUsuario)
         {
-
-            //Ajustar esta Query falta um referencia do banco de daos de categoria com sistema financeiro. 
             try
             {
                 using (var connection = _context.CreateConnection())
                 {
                     string query = @"
-                    SELECT c.*
-                    FROM Categoria c
-                    INNER JOIN SistemaFinanceiro s ON c.IdSistema = s.Id
-                    INNER JOIN UsuarioSistemaFinanceiro us ON s.Id = us.IdSistema
-                    WHERE us.EmailUsuario = @EmailUsuario AND us.SistemaAtual = 1";
+                        SELECT c.*
+                        FROM Categoria c
+                        INNER JOIN SistemaFinanceiro s ON c.IdSistema = s.Id
+                        INNER JOIN UsuarioSistemaFinanceiro us ON s.Id = us.IdSistema
+                        WHERE us.EmailUsuario = @EmailUsuario AND us.SistemaAtual = 1";
 
                     var parametros = new { EmailUsuario = emailUsuario };
-                    return (await connection.QueryAsync<Categoria>(query, parametros)).ToList();
+
+                    // Log de informações relevantes
+                    Console.WriteLine($"Executando a consulta SQL: {query}");
+                    Console.WriteLine($"Parâmetros: EmailUsuario = {emailUsuario}");
+
+                    // Executar a consulta
+                    var resultado = await connection.QueryAsync<Categoria>(query, parametros);
+
+                    // Log do resultado
+                    Console.WriteLine($"Número de categorias encontradas: {resultado}");
+
+                    return resultado.ToList();
                 }
             }
             catch (Exception ex)
             {
-                // Tratar ou relatar a exceção
-                Console.WriteLine($"Erro ao listar categoriasss do usuário devAzure 2 agora deu certo Desenvolvimento: {ex.Message}");
+                // Log do erro
+                Console.WriteLine($"Erro ao listar categorias do usuário: {ex.Message}");
                 throw;
             }
-
         }
     }
 }
