@@ -84,8 +84,6 @@ namespace Financeiro.Solution.View.Controllers
                 _logger.LogError(ex, "Ocorreu um erro: " + ex.Message);
                 return StatusCode(500, new Resposta(500, ex.Message));
             }
-
-   
         }
     }
 }

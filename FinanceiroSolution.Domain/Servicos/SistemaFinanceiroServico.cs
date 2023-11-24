@@ -25,55 +25,59 @@ namespace FinanceiroSolution.Domain.Servicos
             _logger = logger;
 
         }
+        /// <summary>
+        /// Estou verificando se retornamos o objeto inteiro se mudar este serviço terei que mudar 
+        // Repositorio interface Controllador
+           
+        /// </summary>
+        /// <param name="sistemaFinanceiro"></param>
+        /// <returns></returns>
 
-        public async Task<bool> AdicionarSistemaFinanceiro(SistemaFinanceiro sistemaFinanceiro)
+        public async Task<(bool success, int IdSistemaFinanceiro, SistemaFinanceiro sistemaFianceiroObject)> AdicionarSistemaFinanceiro(SistemaFinanceiro sistemaFinanceiro)
         {
             var valido = sistemaFinanceiro.validarPropriedadeString(sistemaFinanceiro.Nome, "Nome");
-            if (valido)
+            if (!valido)
             {
-                var data = DateTime.Now;
-                sistemaFinanceiro.DiaFechamento = 1;
-                sistemaFinanceiro.Ano = data.Year;
-                sistemaFinanceiro.Mes = data.Month;
-                sistemaFinanceiro.AnoCopia = data.Year;
-                sistemaFinanceiro.MesCopia = data.Month;
-                sistemaFinanceiro.GerarCopiaDespesa = true;
-                try
-                {
-                    IResposta<bool> resposta = await _interfaceSistemaFinanceiro.Add(sistemaFinanceiro);
-
-
-                    if (resposta.OperacaoSucesso == false)
-                    {
-                        Console.WriteLine("Falha ao adicionar a Sistema Financeiro: " + resposta.MensagemErro);
-                        _logger.LogInformation("Falha ao adicionar a categoria: " + resposta.MensagemErro);
-                        return false;
-                    }
-                    else
-                    {
-                        _logger.LogInformation("Sistema Financeiro adicionada com sucesso!");
-                        // Faça algo se a operação for bem-sucedida
-                        // ...
-
-                        return true;
-                    }
-                }
-                catch (Exception ex)
-                {
-
-
-                    Console.WriteLine("Ocorreu um erro ao adicionar a categoria: " + ex.Message);
-                    // Ou utilize sua biblioteca de log preferida para registrar o erro
-
-                    // Trate o erro aqui
-                    // ...
-
-                }
-                return false;
-
+                return (false, 0,null);
             }
-            return false;
+
+            var data = DateTime.Now;
+            sistemaFinanceiro.DiaFechamento = 1;
+            sistemaFinanceiro.Ano = data.Year;
+            sistemaFinanceiro.Mes = data.Month;
+            sistemaFinanceiro.AnoCopia = data.Year;
+            sistemaFinanceiro.MesCopia = data.Month;
+            sistemaFinanceiro.GerarCopiaDespesa = true;
+
+            try
+            {
+                IResposta<(bool success, int IdSistemaFinanceiro,SistemaFinanceiro sistemaFianceiroObject)> resposta = await _interfaceSistemaFinanceiro.AdicionarSistemaFinanceiro(sistemaFinanceiro);
+
+                if (!resposta.OperacaoSucesso)
+                {
+                    Console.WriteLine("Falha ao adicionar o Sistema Financeiro: " + resposta.MensagemErro);
+                    _logger.LogInformation("Falha ao adicionar o Sistema Financeiro: " + resposta.MensagemErro);
+                    return (false, 0, null);
+                }
+                else
+                {
+                    int IdSistemaFinanceiro = resposta.Dados.IdSistemaFinanceiro;
+                    SistemaFinanceiro sistemaFianceiroObject = resposta.Dados.sistemaFianceiroObject;
+                    _logger.LogInformation("Sistema Financeiro adicionado com sucesso!");
+
+
+                    return (true, IdSistemaFinanceiro, sistemaFianceiroObject);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ocorreu um erro ao adicionar o Sistema Financeiro: " + ex.Message);
+       
+
+                return (false, 00, null);
+            }
         }
+
 
         public Task AtualizarDespesa(SistemaFinanceiro sistemaFinanceiro)
         {

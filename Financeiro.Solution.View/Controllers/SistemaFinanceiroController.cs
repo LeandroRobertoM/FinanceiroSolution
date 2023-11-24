@@ -1,4 +1,5 @@
-﻿using Financeiro.Solution.View.Models;
+﻿using Financeiro.Solution.Infra.Data.Response;
+using Financeiro.Solution.View.Models;
 using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
 using FinanceiroSolution.Domain.Interfaces.ISistemaFinanceiro;
@@ -39,9 +40,9 @@ namespace Financeiro.Solution.View.Controllers
         [Produces("application/json")]
         public async Task<object> AdicionarSistemaFinanceiro(SistemaFinanceiroViewModel sistemaFinanceiroViewModel)
         {
-            _logger.LogInformation("Processo de pegar a variavel do ID tipo sistema{SistemaID}", sistemaFinanceiroViewModel.Id);
-            _logger.LogInformation("Envelope dos campos: Nome: {Nome}, Descrição: {SistemaID}", sistemaFinanceiroViewModel.Nome);
-            _logger.LogInformation("Envelope processado: {Envelope}", JsonConvert.SerializeObject(sistemaFinanceiroViewModel));
+         
+            _logger.LogInformation("Envelope dos campos: Nome: {Nome}, Descrição: {Nome}", sistemaFinanceiroViewModel.Nome);
+           _logger.LogInformation("Envelope processado: {Envelope}", JsonConvert.SerializeObject(sistemaFinanceiroViewModel));
 
             SistemaFinanceiro NovosistemaFinanceiro = new SistemaFinanceiro
             {
@@ -55,29 +56,29 @@ namespace Financeiro.Solution.View.Controllers
 
             };
 
-
           try
             {
 
                 _logger.LogInformation("Depois de alterar Novacategoria: {Envelope}", JsonConvert.SerializeObject(NovosistemaFinanceiro));
-                bool operacaoSucesso = await _ISistemaFinanceiroServico.AdicionarSistemaFinanceiro(NovosistemaFinanceiro);
+                
 
-                if (operacaoSucesso)
+                (bool sucesso,  int IdSistemaFinanceiro, SistemaFinanceiro sistemaFianceiroObject) = await _ISistemaFinanceiroServico.AdicionarSistemaFinanceiro(NovosistemaFinanceiro);
+
+
+                if (sucesso)
                 {
-                    return Ok(new Resposta(200, "Criado com sucesso! o sistema Financeiro"));
+                    return Ok(new RespostaCustomDados<SistemaFinanceiro>(200, "Criado com sucesso!", sistemaFianceiroObject));
                 }
                 else
                 {
                     return StatusCode(500, new Resposta(500, "Falha ao adicionar a Sistema Financeiro."));
                 }
-
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Ocorreu um erro: " + ex.Message);
                 return StatusCode(500, new Resposta(500, ex.Message));
             }
-
         }
 
         [HttpPut("/api/AtualizarSistemaFinanceiro")]
