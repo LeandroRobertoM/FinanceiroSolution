@@ -84,11 +84,10 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
                 using (var connection = _context.CreateConnection())
                 {
                     string query = @"
-                    SELECT c.*
+                    SELECT s.*
                     FROM SistemaFinanceiro s
-                    JOIN Categoria c ON s.Id = c.IdSistema
                     JOIN UsuarioSistemaFinanceiro us ON s.Id = us.IdSistema
-                    WHERE us.EmailUsuario = @EmailUsuario AND us.SistemaAtual = 1";
+                    WHERE us.EmailUsuario = @EmailUsuario";
 
                     var parametros = new { EmailUsuario = emailUsuario };
                     return (await connection.QueryAsync<SistemaFinanceiro>(query, parametros)).ToList();
@@ -97,7 +96,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             catch (Exception ex)
             {
                 // Tratar ou relatar a exceção
-                Console.WriteLine($"Erro ao listar categorias do usuário: {ex.Message}");
+                Console.WriteLine($"Erro ao listar Sistemas Vinculados ao usuário: {ex.Message}");
                 throw;
             }
 
