@@ -26,6 +26,7 @@ namespace FinanceiroSolution.Domain.Servicos
         {
             var data = DateTime.UtcNow;
             despesa.DataCadastro = data;
+            despesa.DataAlteracao = data;
             despesa.Ano = data.Year;
             despesa.Mes = data.Month;
             var valido = despesa.validarPropriedadeString(despesa.Nome, "Nome");
@@ -90,7 +91,7 @@ namespace FinanceiroSolution.Domain.Servicos
             var despesas_pendentes = despesasUsuario.Where(d => !d.Pago && d.TipoDespesa == Enums.EnumTipoDespesa.Contas)
                 .Sum(x => x.Valor);
 
-            var investimentos = despesasUsuario.Where(d => d.TipoDespesa == Enums.EnumTipoDespesa.Contas)
+            var investimentos = despesasUsuario.Where(d => d.TipoDespesa == Enums.EnumTipoDespesa.Investimento)
                 .Sum(x => x.Valor);
 
             return new

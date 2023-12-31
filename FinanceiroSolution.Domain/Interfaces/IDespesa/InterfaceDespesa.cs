@@ -16,5 +16,5 @@ namespace FinanceiroSolution.Domain.Interfaces.IDespesa
 
         Task<IList<Despesa>> ListarDespesasNaoPagasMesesAnterior(string emailUsuario);
 
-    }
+    }  
 }

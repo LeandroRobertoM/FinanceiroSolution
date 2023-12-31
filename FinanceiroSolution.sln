@@ -23,9 +23,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testes Unitários", "Testes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testes de Integração", "Testes de Integração", "{4EA0A6D2-F195-45AA-A46C-8B9E5F7372F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financeiro.Solution.Dominio.Tests", "Financeiro.Solution.Dominio.Tests\Financeiro.Solution.Dominio.Tests.csproj", "{BEEF1DCC-703D-48B1-B892-08F4CEF2AD12}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Financeiro.Solution.Dominio.Tests", "Financeiro.Solution.Dominio.Tests\Financeiro.Solution.Dominio.Tests.csproj", "{BEEF1DCC-703D-48B1-B892-08F4CEF2AD12}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Financeiro.Solution.Infra.Tests", "Financeiro.Solution.Infra.Tests\Financeiro.Solution.Infra.Tests.csproj", "{F22D92DB-0200-48C0-946F-EF5C87E78324}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Financeiro.Solution.Infra.Tests", "Financeiro.Solution.Infra.Tests\Financeiro.Solution.Infra.Tests.csproj", "{F22D92DB-0200-48C0-946F-EF5C87E78324}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
