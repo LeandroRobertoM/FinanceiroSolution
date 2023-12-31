@@ -24,8 +24,6 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
         }
 
 
-
-
         public async Task<IList<UsuarioSistemaFinanceiro>> ListarUsuariosSistema(int Id)
         {
             try
@@ -47,10 +45,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             }
         }
 
-        public Task<IList<SistemaFinanceiro>> ListaSistemasUsuario(string emailUsuario)
-        {
-            throw new NotImplementedException();
-        }
+    
 
         public async Task<IList<UsuarioSistemaFinanceiro>> ObterUsuarioPorEmail(string emailUsuario)
         {
@@ -93,11 +88,6 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
                 Console.WriteLine($"Erro ao excluir Usuário Por email do usuário Sistema: {ex.Message}");
                 throw;
             }
-        }
-
-        Task<UsuarioSistemaFinanceiro> InterfaceUserSistemaFinanceiro.ObterUsuarioPorEmail(string emailUsuario)
-        {
-            throw new NotImplementedException();
         }
     }
 }

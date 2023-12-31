@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
 {
     [Migration(20230427)]
-    public class InitialSeed_20230427_DespesaTable : Migration
+    public class InitialSeed_20231223_DespesaTable : Migration
     {
 
         public override void Down()
@@ -21,14 +21,14 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
         {
             Create.Table("Despesa")
                 .WithColumn("IdDespesa").AsInt32().Identity().PrimaryKey()
-                .WithColumn("IdUser").AsGuid().NotNullable()
+                .WithColumn("Nome").AsString(50).NotNullable()
                 .WithColumn("Valor").AsDecimal().NotNullable()
                 .WithColumn("Mes").AsInt32().NotNullable()
                 .WithColumn("Ano").AsInt32().NotNullable()
                 .WithColumn("TipoDespesa").AsInt16().NotNullable()
                 .WithColumn("DataCadastro").AsDateTime().NotNullable()
-                .WithColumn("DataAlteracao").AsDateTime().NotNullable()
-                .WithColumn("DataPagamento").AsDateTime().NotNullable()
+                .WithColumn("DataAlteracao").AsDateTime()
+                .WithColumn("DataPagamento").AsDateTime().Nullable()
                 .WithColumn("DataVencimento").AsDateTime().NotNullable()
                 .WithColumn("Pago").AsBoolean().NotNullable()
                 .WithColumn("DespesaAtrasada").AsBoolean().NotNullable()
