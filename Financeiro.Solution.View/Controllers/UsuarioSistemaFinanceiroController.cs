@@ -51,6 +51,39 @@ namespace Financeiro.Solution.View.Controllers
             return Task.FromResult(true);
         }
 
+        [HttpPost("/api/CadastrarUsuarioListaSistemas")]
+        [Produces("application/json")]
+        public async Task<object> CadastrarUsuarioListaSistemas(int[] idsSistemas, string emailUsuario)
+        {
+            try
+            {
+                var usuarioSistemas = new List<UsuarioSistemaFinanceiro>();
+
+                // Para cada ID de sistema na lista, criar um objeto UsuarioSistemaFinanceiro
+                foreach (var idSistema in idsSistemas)
+                {
+                    var usuarioSistema = new UsuarioSistemaFinanceiro
+                    {
+                        IdSistema = idSistema,
+                        EmailUsuario = emailUsuario,
+                        Administrador = false, // Você pode definir como necessário
+                        SistemaAtual = true // Você pode definir como necessário
+                    };
+
+                    usuarioSistemas.Add(usuarioSistema);
+                }
+
+                // Chamar o método da camada de serviço para adicionar a lista de sistemas do usuário
+                await _IUsuarioSistemasFinanceiroServico.AdicionarListaSistemasUsuario(usuarioSistemas);
+
+                return Task.FromResult(true);
+            }
+            catch (Exception)
+            {
+                return Task.FromResult(false);
+            }
+        }
+
         [HttpDelete("/api/DeletarUsuarioNoSistema")]
         [Produces("application/json")]
         public async Task<object> DeletarUsuarioNoSistema(int Id)
