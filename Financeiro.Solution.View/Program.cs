@@ -54,6 +54,7 @@ builder.Services.AddSingleton<InterfaceCategoria, CategoriaRepository>();
 builder.Services.AddSingleton<InterfaceDespesa, DespesaRepository>();
 builder.Services.AddSingleton<InterfaceSistemaFinanceiro, SistemaFinanceiroRepository>();
 builder.Services.AddSingleton<InterfaceUserSistemaFinanceiro, UsuarioSistemaFinanceiroRepository>();
+builder.Services.AddSingleton<InterfaceUsuarioCreate, UsuarioCriadorRepository>();
 
 
 
@@ -62,6 +63,7 @@ builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
 builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
 builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
 builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
+builder.Services.AddSingleton<IUsuarioCreateServico, UsuarioCreateServico>();
 
 
 
