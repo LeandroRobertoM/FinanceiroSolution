@@ -1,4 +1,5 @@
-﻿using FinanceiroSolution.Domain.Entidades;
+﻿using Financeiro.Solution.View.DTO;
+using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
 using FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro;
 using Microsoft.AspNetCore.Authorization;
@@ -49,6 +50,43 @@ namespace Financeiro.Solution.View.Controllers
             }
 
             return Task.FromResult(true);
+        }
+
+        [HttpPost("/api/CadastrarUsuarioListaSistemas")]
+        [Produces("application/json")]
+        public async Task<object> CadastrarUsuarioListaSistemas(UsuarioSistemasDTO usuarioSistemasDTO)
+        {
+            try
+            {
+                var usuarioSistemass = new UsuarioSistemaFinanceiro();
+
+                List<UsuarioSistemaFinanceiro> lstSistemas = new List<UsuarioSistemaFinanceiro>();
+
+
+                // Para cada ID de sistema na lista, criar um objeto UsuarioSistemaFinanceiro
+                foreach (var sistemaDto in usuarioSistemasDTO.SistemasFinanceiros)
+                {
+                    var usuarioSistemas = new UsuarioSistemaFinanceiro
+                    {
+                        IdSistema = sistemaDto.Id,
+                        EmailUsuario = usuarioSistemasDTO.EmailUsuario,
+                        Administrador = false, // Você pode definir como necessário
+                        SistemaAtual = true // Você pode definir como necessário
+                    };
+
+                    lstSistemas.Add(usuarioSistemas);
+
+                }
+
+                // Chamar o método da camada de serviço para adicionar a lista de sistemas do usuário
+                await _IUsuarioSistemasFinanceiroServico.AdicionarListaSistemasUsuario(lstSistemas);
+
+                return Task.FromResult(true);
+            }
+            catch (Exception)
+            {
+                return Task.FromResult(false);
+            }
         }
 
         [HttpDelete("/api/DeletarUsuarioNoSistema")]

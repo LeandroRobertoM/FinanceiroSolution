@@ -41,7 +41,8 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Extensions
                     migrationService.MigrateUp(2023051406);
                     migrationService.MigrateUp(2023051407);
                     migrationService.MigrateUp(20231222);
-                  
+                    migrationService.MigrateUp(20240428);
+
 
 
                     migrationService.ListMigrations();

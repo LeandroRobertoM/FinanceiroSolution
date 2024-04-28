@@ -1,7 +1,11 @@
 ﻿using FinanceiroSolution.Domain.Entidades;
+using FinanceiroSolution.Domain.Interfaces.ICategoria;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
 using FinanceiroSolution.Domain.Interfaces.IResposta;
+using FinanceiroSolution.Domain.Interfaces.ISistemaFinanceiro;
 using FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro;
+using FinanceiroSolution.Domain.Interfaces.Servicos;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,46 +14,51 @@ using System.Threading.Tasks;
 
 namespace FinanceiroSolution.Domain.Servicos
 {
-    public class UsuarioSistemaFinanceiroServico : IUsuarioSistemaFinanceiroServico
+    public class UsuarioCreateServico : IUsuarioCreateServico
     {
+        private readonly InterfaceUsuarioCreate _interfaceUsuarioCriador;
+        private readonly ILogger<SistemaFinanceiroServico> _logger;
 
-        private readonly InterfaceUserSistemaFinanceiro _interfaceUserSistemaFinanceiro;
-
-        public UsuarioSistemaFinanceiroServico(InterfaceUserSistemaFinanceiro interfaceUserSistemaFinanceiro)
+        public UsuarioCreateServico(InterfaceUsuarioCreate interfaceUsuarioCriador, ILogger<UsuarioCreate> logger)
         {
-            _interfaceUserSistemaFinanceiro = interfaceUserSistemaFinanceiro;
+            _interfaceUsuarioCriador = interfaceUsuarioCriador;
+
+
         }
 
-        public async Task CadastrarUsuarioNoSistema(UsuarioSistemaFinanceiro usuarioSistemaFinanceiro)
-        {
-            await _interfaceUserSistemaFinanceiro.Add(usuarioSistemaFinanceiro);
-        }
-
-        public async Task AdicionarListaSistemasUsuario(List<UsuarioSistemaFinanceiro> usuarioSistemaFinanceiro)
+        public async Task<bool> AdicionarUsuario(UsuarioCreate usuarioCreate)
         {
             try
             {
-                IResposta<bool> resposta = await _interfaceUserSistemaFinanceiro.AdicionarListaSistemaFinanceiro(usuarioSistemaFinanceiro);
+                IResposta<bool> resposta = await _interfaceUsuarioCriador.Adicionar(usuarioCreate);
 
                 if (resposta.OperacaoSucesso == false)
                 {
                     Console.WriteLine("Falha ao adicionar a categoria: " + resposta.MensagemErro);
-                    // Faça algo se a operação falhar
+                    _logger.LogInformation("Falha ao adicionar a categoria: " + resposta.MensagemErro);
+                    return false;
                 }
                 else
                 {
+                    _logger.LogInformation("Categoria adicionada com sucesso!");
                     // Faça algo se a operação for bem-sucedida
                     // ...
+
+                    return true;
                 }
             }
             catch (Exception ex)
             {
+
+
                 Console.WriteLine("Ocorreu um erro ao adicionar a categoria: " + ex.Message);
                 // Ou utilize sua biblioteca de log preferida para registrar o erro
+
                 // Trate o erro aqui
                 // ...
+
             }
+            return false;
         }
     }
-
 }
