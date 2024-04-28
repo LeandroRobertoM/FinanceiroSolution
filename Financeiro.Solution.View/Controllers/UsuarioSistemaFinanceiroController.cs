@@ -1,4 +1,5 @@
-﻿using FinanceiroSolution.Domain.Entidades;
+﻿using Financeiro.Solution.View.DTO;
+using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
 using FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro;
 using Microsoft.AspNetCore.Authorization;
@@ -26,6 +27,7 @@ namespace Financeiro.Solution.View.Controllers
         public async Task<object> ListaSistemasUsuario(int IdSistema)
         {
             return await _InterfaceUserSistemaFinanceiro.ListarUsuariosSistema(IdSistema);
+            
         }
 
         [HttpPost("/api/CadastrarUsuarioNoSistema")]
@@ -53,28 +55,32 @@ namespace Financeiro.Solution.View.Controllers
 
         [HttpPost("/api/CadastrarUsuarioListaSistemas")]
         [Produces("application/json")]
-        public async Task<object> CadastrarUsuarioListaSistemas(int[] idsSistemas, string emailUsuario)
+        public async Task<object> CadastrarUsuarioListaSistemas(UsuarioSistemasDTO usuarioSistemasDTO)
         {
             try
             {
-                var usuarioSistemas = new List<UsuarioSistemaFinanceiro>();
+                var usuarioSistemass = new UsuarioSistemaFinanceiro();
+
+                List<UsuarioSistemaFinanceiro> lstSistemas = new List<UsuarioSistemaFinanceiro>();
+
 
                 // Para cada ID de sistema na lista, criar um objeto UsuarioSistemaFinanceiro
-                foreach (var idSistema in idsSistemas)
+                foreach (var sistemaDto in usuarioSistemasDTO.SistemasFinanceiros)
                 {
-                    var usuarioSistema = new UsuarioSistemaFinanceiro
+                    var usuarioSistemas = new UsuarioSistemaFinanceiro
                     {
-                        IdSistema = idSistema,
-                        EmailUsuario = emailUsuario,
+                        IdSistema = sistemaDto.Id,
+                        EmailUsuario = usuarioSistemasDTO.EmailUsuario,
                         Administrador = false, // Você pode definir como necessário
                         SistemaAtual = true // Você pode definir como necessário
                     };
 
-                    usuarioSistemas.Add(usuarioSistema);
+                    lstSistemas.Add(usuarioSistemas);
+
                 }
 
                 // Chamar o método da camada de serviço para adicionar a lista de sistemas do usuário
-                await _IUsuarioSistemasFinanceiroServico.AdicionarListaSistemasUsuario(usuarioSistemas);
+                await _IUsuarioSistemasFinanceiroServico.AdicionarListaSistemasUsuario(lstSistemas);
 
                 return Task.FromResult(true);
             }

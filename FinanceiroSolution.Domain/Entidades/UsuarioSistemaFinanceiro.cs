@@ -17,6 +17,8 @@ namespace FinanceiroSolution.Domain.Entidades
         public bool SistemaAtual { get; set; }
         public int IdSistema { get; set; }
 
+        public List<string> ListaEmailUsuario { get; set; }
+
         public virtual SistemaFinanceiro SistemaFinanceiro { get; set; }
 
 
