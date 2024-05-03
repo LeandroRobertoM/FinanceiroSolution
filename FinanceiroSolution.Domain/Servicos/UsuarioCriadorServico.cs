@@ -60,5 +60,21 @@ namespace FinanceiroSolution.Domain.Servicos
             }
             return false;
         }
+
+        public async Task<IList<UsuarioCreate>> ListaSistemasUsuario(string usuarioCriadorId)
+        {
+            try
+            {
+                // Chame o método do repositório para obter a lista de sistemas do usuário
+                return await _interfaceUsuarioCriador.ListaSistemasUsuario(usuarioCriadorId);
+            }
+            catch (Exception ex)
+            {
+                // Trate qualquer exceção e retorne null ou uma lista vazia, conforme necessário
+                Console.WriteLine($"Erro ao listar sistemas do usuário: {ex.Message}");
+                return null;
+            }
+        }
     }
+    
 }

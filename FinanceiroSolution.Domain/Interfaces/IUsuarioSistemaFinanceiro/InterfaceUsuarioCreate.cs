@@ -12,5 +12,7 @@ namespace FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro
     public interface InterfaceUsuarioCreate : InterfaceGeneric<UsuarioCreate>
     {
         Task<IResposta<bool>> Adicionar(UsuarioCreate usuarioCreateUsuario);
+
+        Task<IList<UsuarioCreate>> ListaSistemasUsuario(string usuarioCriadorId);
     }
 }

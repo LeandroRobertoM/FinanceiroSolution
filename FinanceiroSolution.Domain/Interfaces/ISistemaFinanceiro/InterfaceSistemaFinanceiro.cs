@@ -19,5 +19,7 @@ namespace FinanceiroSolution.Domain.Interfaces.ISistemaFinanceiro
         Task<IResposta<(bool success, int IdSistemaFinanceiro, SistemaFinanceiro sistemaFianceiroObject)>> AdicionarSistemaFinanceiro(SistemaFinanceiro sistemaFinanceiro);
 
         Task<IList<SistemaFinanceiro>> ListaSistemasUsuario(string emailUsuario);
+
+        Task<IList<SistemaFinanceiro>> ListaSistemasUsuarioID(string IdUser);
     }
 }

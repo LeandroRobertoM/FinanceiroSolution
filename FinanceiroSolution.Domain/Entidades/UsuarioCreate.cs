@@ -11,7 +11,7 @@ namespace FinanceiroSolution.Domain.Entidades
     {
         public int Id { get; set; }
 
-        public DateTime DataCriacao { get; set; }
+        public DateTime DataCadastro { get; set; }
 
         public string UsuarioCriadorId { get; set; }
 

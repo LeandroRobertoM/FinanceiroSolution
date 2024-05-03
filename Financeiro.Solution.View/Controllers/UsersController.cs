@@ -29,7 +29,7 @@ namespace Financeiro.Solution.View.Controllers
         private readonly IUsuarioCreateServico _IUsuarioCreateServico;
         private readonly ILogger<CategoriaController> _logger;
 
- 
+
         public UsersController(UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager, InterfaceUsuarioCreate interfaceUsuarioCreate, IUsuarioCreateServico IUsuarioCreateServico)
         {
@@ -86,10 +86,39 @@ namespace Financeiro.Solution.View.Controllers
 
         }
 
+        [HttpPut("/api/AtualizarUsuario")]
+        [Produces("application/json")]
+        [Authorize]
+        public async Task<IActionResult> UpdateUser(ApplicationUser updatedUser)
+        {
+            // Encontra o usuário com base no ID
+            var user = await _userManager.FindByIdAsync(updatedUser.Id);
+            if (user == null)
+            {
+                return NotFound("Usuário não encontrado");
+            }
+
+            // Atualiza as propriedades do usuário
+            user.UserName = updatedUser.UserName;
+            user.Email = updatedUser.Email;
+            // Adicione outras propriedades que você deseja atualizar
+
+            // Salva as mudanças no banco de dados
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                // Se ocorrer algum erro durante a atualização, retorne uma mensagem de erro
+                return BadRequest(result.Errors);
+            }
+
+            // Retorna uma resposta de sucesso
+            return Ok("Usuário atualizado com sucesso");
+        }
+
         [AllowAnonymous]
         [Produces("application/json")]
         [HttpPost("/api/AdicionaUsuarioCreate")]
-        public async Task<IActionResult> AdicionaUsuarioCreate([FromBody] Login login, string idUsuario)
+        public async Task<IActionResult> AdicionaUsuarioCreate([FromBody] LoginUserCreate login)
         {
             if (string.IsNullOrWhiteSpace(login.email) ||
                 string.IsNullOrWhiteSpace(login.senha) ||
@@ -112,7 +141,7 @@ namespace Financeiro.Solution.View.Controllers
             {
                 // Se a criação do usuário foi bem-sucedida, o ID estará disponível em user.Id
                 var userId = user.Id;
-   
+
                 // Geração de confirmação caso precise 
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -122,7 +151,7 @@ namespace Financeiro.Solution.View.Controllers
 
                 if (respose_Retorn.Succeeded)
                 {
-                
+
                     if (login.IdUsuarioLogado != null)
                     {
 
@@ -132,7 +161,7 @@ namespace Financeiro.Solution.View.Controllers
                             {
                                 UsuarioCriadoId = userId,
                                 UsuarioCriadorId = login.IdUsuarioLogado,
-                                DataCriacao = DateTime.UtcNow
+                                DataCadastro = DateTime.UtcNow
                             });
                     }
                     return Ok("Usuário adicionado com sucesso!");
@@ -154,6 +183,22 @@ namespace Financeiro.Solution.View.Controllers
         public async Task<IActionResult> GetUserIdByEmail(string email)
         {
             // Encontra o usuário com base no email
+            var user = await _userManager.FindByIdAsync(email);
+            if (user == null)
+            {
+                return NotFound("Usuário não encontrado");
+            }
+
+            // Retorna o ID do usuário encontrado
+            return Ok(user);
+        }
+
+        [HttpGet("/api/AllByEmail")]
+        [Produces("application/json")]
+        [Authorize]
+        public async Task<IActionResult> GetUserAllByEmail(string email)
+        {
+            // Encontra o usuário com base no email
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
@@ -161,7 +206,116 @@ namespace Financeiro.Solution.View.Controllers
             }
 
             // Retorna o ID do usuário encontrado
-            return Ok(user.Id);
+            return Ok(user);
+        }
+
+        [HttpGet("/api/ObterUserVinculados")]
+        [Produces("application/json")]
+        [Authorize]
+        public async Task<IActionResult> GetUserByEmaillinked(string email)
+        {
+            try
+            {
+                // Encontra o usuário com base no email
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return NotFound("Usuário não encontrado");
+                }
+
+                // Obter lista de sistemas vinculados ao usuário
+                var usuarioVinculados = await _IUsuarioCreateServico.ListaSistemasUsuario(user.Id);
+                if (usuarioVinculados == null || usuarioVinculados.Count == 0)
+                {
+                    return NotFound("Nenhum sistema vinculado encontrado para este usuário");
+                }
+
+                // Lista para armazenar os usuários encontrados
+                var usuarios = new List<ApplicationUser>();
+
+                // Para cada usuário encontrado, buscar o usuário completo e adicioná-lo à lista
+                foreach (var usuario in usuarioVinculados)
+                {
+                    var usuarioCompleto = await _userManager.FindByIdAsync(usuario.UsuarioCriadoId);
+                    if (usuarioCompleto != null)
+                    {
+                        usuarios.Add(usuarioCompleto); // Adiciona o usuário completo à lista
+                    }
+                }
+
+                // Retorna a lista de usuários encontrados
+                return Ok(usuarios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao obter usuários vinculados: {ex.Message}");
+            }
+        }
+
+        [HttpGet("/api/GetUserid")]
+        [Produces("application/json")]
+        [Authorize]
+        public async Task<IActionResult> GetUserid(string IdUser)
+        {
+            try
+            {
+                // Encontra o usuário com base no email
+                var user = await _userManager.FindByIdAsync(IdUser);
+                if (user == null)
+                {
+                    return NotFound("Usuário não encontrado");
+                }
+
+                // Retorna a lista de usuários encontrados
+                return Ok(user);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao obter usuários vinculados: {ex.Message}");
+            }
+        }
+
+        [HttpGet("/api/getIDUserSistemasVinculados")]
+        [Produces("application/json")]
+        [Authorize]
+        public async Task<IActionResult> GetIDUserByEmaillinked(string email)
+        {
+            try
+            {
+                // Encontra o usuário com base no email
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    return NotFound("Usuário não encontrado");
+                }
+
+                // Obter lista de sistemas vinculados ao usuário
+                var usuarioVinculados = await _IUsuarioCreateServico.ListaSistemasUsuario(user.Id);
+                if (usuarioVinculados == null || usuarioVinculados.Count == 0)
+                {
+                    return NotFound("Nenhum sistema vinculado encontrado para este usuário");
+                }
+
+                // Lista para armazenar os usuários encontrados
+                var usuarios = new List<ApplicationUser>();
+
+                // Para cada usuário encontrado, buscar o usuário completo e adicioná-lo à lista
+                foreach (var usuario in usuarioVinculados)
+                {
+                    var usuarioCompleto = await _userManager.FindByIdAsync(usuario.UsuarioCriadoId);
+                    if (usuarioCompleto != null)
+                    {
+                        usuarios.Add(usuarioCompleto); // Adiciona o usuário completo à lista
+                    }
+                }
+
+                // Retorna a lista de usuários encontrados
+                return Ok(usuarios);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro ao obter usuários vinculados: {ex.Message}");
+            }
         }
     }
 }
