@@ -29,6 +29,15 @@ namespace Financeiro.Solution.View.Controllers
             return await _InterfaceUserSistemaFinanceiro.ListarUsuariosSistema(IdSistema);
         }
 
+        [HttpGet("/api/ListaSistemasUsuarioEmail")]
+        [Produces("application/json")]
+        public async Task<object> ListaSistemasUsuarioEmail(string emailUsuario)
+        {
+            return await _InterfaceUserSistemaFinanceiro.ObterUsuarioPorEmail(emailUsuario);
+        }
+
+
+
         [HttpPost("/api/CadastrarUsuarioNoSistema")]
         [Produces("application/json")]
         public async Task<object> CadastrarUsuarioNoSistema(int IdSistema, string emailUsuario)

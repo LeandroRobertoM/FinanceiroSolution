@@ -55,6 +55,28 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             }
         }
 
+        public async Task<IList<UsuarioCreate>> ListaSistemasUsuario(string usuarioCriadorId)
+        {
+
+            try
+            {
+                using (var connection = _context.CreateConnection())
+                {
+                    string query = @"SELECT * FROM UsuarioCreate WHERE UsuarioCriadorId = @UsuarioCriadorId";
+
+
+                    var parametros = new { UsuarioCriadorId = usuarioCriadorId };
+                    return (await connection.QueryAsync<UsuarioCreate>(query, parametros)).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+                // Tratar ou relatar a exceção
+                Console.WriteLine($"Erro ao listar Usuario Por email do usuário Sistema: {ex.Message}");
+                throw;
+            }
+
+        }
     }
 }
 

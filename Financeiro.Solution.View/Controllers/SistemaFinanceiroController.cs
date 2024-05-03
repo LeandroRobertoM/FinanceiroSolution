@@ -36,6 +36,21 @@ namespace Financeiro.Solution.View.Controllers
             return await _InterfacesistemaFinanceiro.ListaSistemasUsuario(emailUsuario);
         }
 
+
+        [HttpGet("/api/ListaUsuarioSistema")]
+        [Produces("application/json")]
+        public async Task<object> ListaSistemaUsuarioID(string idUser)
+        {
+            var sistemas = await _InterfacesistemaFinanceiro.ListaSistemasUsuarioID(idUser);
+
+            if (sistemas == null || sistemas.Count == 0)
+            {
+                return NotFound("Nenhum sistema encontrado para o usuário especificado.");
+            }
+
+            return sistemas;
+        }
+
         [HttpPost("/api/AdicionarSistemaFinanceiro")]
         [Produces("application/json")]
         public async Task<object> AdicionarSistemaFinanceiro(SistemaFinanceiroViewModel sistemaFinanceiroViewModel)

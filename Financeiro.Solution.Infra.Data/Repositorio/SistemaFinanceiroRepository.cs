@@ -22,7 +22,7 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
         public SistemaFinanceiroRepository(DapperContext context) : base(context)
         {
 
-           
+
             _context = context;
 
         }
@@ -101,6 +101,20 @@ namespace Financeiro.Solution.Infra.Data.Repositorio
             }
 
         }
- 
+
+        public async Task<IList<SistemaFinanceiro>> ListaSistemasUsuarioID(string IdUser)
+        {
+            //Ajustar esta Query
+            using (var connection = _context.CreateConnection())
+            {
+                string query = @"
+                          SELECT *
+                              FROM AspNetUsers
+                               WHERE id LIKE @id";
+
+                var parametros = new { id = $"%{IdUser}%" };
+                 return (await connection.QueryAsync<SistemaFinanceiro>(query, parametros)).ToList();
+            }
+        }
     }
 }
