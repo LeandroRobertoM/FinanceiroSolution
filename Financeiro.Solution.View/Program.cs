@@ -25,6 +25,8 @@ using System.Reflection;
 using Serilog;
 using Financeiro.Solution.View.Extensions;
 using Financeiro.Solution.Infra.Tests;
+using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
+using FinanceiroSolution.Domain.Servicos.EmailService;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
@@ -45,8 +47,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<EntityFramework>(options =>
                options.UseSqlServer(
                    builder.Configuration.GetConnectionString("SqlConnection")));
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>()
     .AddEntityFrameworkStores<EntityFramework>();
+
+
 
 
 // INTERFACE E REPOSITORIO
@@ -66,6 +70,20 @@ builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFi
 builder.Services.AddSingleton<IUsuarioCreateServico, UsuarioCreateServico>();
 
 
+// SERVIÇO DE EMAIL
+var emailConfig = builder.Configuration
+        .GetSection("EmailConfiguration")
+        .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+builder.Services.AddAutoMapper(typeof(Program));
+
+/*Criar IdentityRole*/
+
+
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+
+builder.Services.AddControllers();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

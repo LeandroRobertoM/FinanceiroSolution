@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Protocols;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -40,6 +41,7 @@ namespace Financeiro.Solution.Infra.Data.Configuracao
             try
             {
                 builder.Entity<ApplicationUser>().ToTable("AspNetUsers").HasKey(t => t.Id);
+                builder.ApplyConfiguration(new RoleConfiguration());
 
                 base.OnModelCreating(builder);
             }
