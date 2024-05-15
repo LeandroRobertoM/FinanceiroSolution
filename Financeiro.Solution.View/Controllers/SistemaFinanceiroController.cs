@@ -39,9 +39,9 @@ namespace Financeiro.Solution.View.Controllers
 
         [HttpGet("/api/ListaUsuarioSistema")]
         [Produces("application/json")]
-        public async Task<object> ListaSistemaUsuarioID(string idUser)
+        public async Task<object> ListaSistemaUsuarioID(string emailUsuario)
         {
-            var sistemas = await _InterfacesistemaFinanceiro.ListaSistemasUsuarioID(idUser);
+            var sistemas =  await _InterfacesistemaFinanceiro.ListaSistemasUsuario(emailUsuario);
 
             if (sistemas == null || sistemas.Count == 0)
             {

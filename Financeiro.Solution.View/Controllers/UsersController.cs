@@ -1,17 +1,27 @@
-﻿using Financeiro.Solution.View.Models;
+﻿using AutoMapper;
+using Financeiro.Solution.View.DTO.Login;
+using Financeiro.Solution.View.DTO.User;
+using Financeiro.Solution.View.Models;
 using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.ICategoria;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
 using FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro;
 using FinanceiroSolution.Domain.Interfaces.Servicos;
 using FinanceiroSolution.Domain.Servicos;
+using FinanceiroSolution.Domain.Servicos.EmailService;
+using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using Org.BouncyCastle.Crypto;
+using Serilog;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+
 
 namespace Financeiro.Solution.View.Controllers
 {
@@ -19,25 +29,58 @@ namespace Financeiro.Solution.View.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
+
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-
+        private readonly UserManager<User> _userManagers;
 
 
 
         private readonly InterfaceUsuarioCreate _InterfaceUsuarioCreate;
         private readonly IUsuarioCreateServico _IUsuarioCreateServico;
         private readonly ILogger<CategoriaController> _logger;
+        private readonly IMapper _mapper;
+        private readonly IEmailSender _emailSender;
 
 
         public UsersController(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager, InterfaceUsuarioCreate interfaceUsuarioCreate, IUsuarioCreateServico IUsuarioCreateServico)
+            SignInManager<ApplicationUser> signInManager, InterfaceUsuarioCreate interfaceUsuarioCreate, IUsuarioCreateServico IUsuarioCreateServico,IMapper mapper, IEmailSender emailSender)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _InterfaceUsuarioCreate = interfaceUsuarioCreate;
             _IUsuarioCreateServico = IUsuarioCreateServico;
+            _emailSender = emailSender;
+            _mapper = mapper;
         }
+
+
+
+        [AllowAnonymous]
+        [Produces("application/json")]
+        [HttpPost("/api/UsuarioLogin")]
+        public async Task<IActionResult> Login([FromBody] UserForAuthenticationDto userForAuthentication)
+        {
+            var user = await _userManager.FindByNameAsync(userForAuthentication.Email);
+            if (user == null)
+                return BadRequest("Invalid Request");
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+                return Unauthorized(new AuthResponseDto { ErrorMessage = "Email is not confirmed" });
+            if (!await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
+                return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid Authentication" });
+
+            /*
+            var signingCredentials = _jwtHandler.GetSigningCredentials();
+            var claims = await _jwtHandler.GetClaims(user);
+            var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
+            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            */
+
+            
+            return Ok(new AuthResponseDto { IsAuthSuccessful = true });
+           
+        }
+
 
         [AllowAnonymous]
         [Produces("application/json")]
@@ -183,7 +226,7 @@ namespace Financeiro.Solution.View.Controllers
         public async Task<IActionResult> GetUserIdByEmail(string email)
         {
             // Encontra o usuário com base no email
-            var user = await _userManager.FindByIdAsync(email);
+            var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
                 return NotFound("Usuário não encontrado");
@@ -316,6 +359,83 @@ namespace Financeiro.Solution.View.Controllers
             {
                 return StatusCode(500, $"Erro ao obter usuários vinculados: {ex.Message}");
             }
+        }
+
+        [HttpPost("Registration")]
+        public async Task<IActionResult> RegisterUser([FromBody] UserForRegistrationDto userForRegistration)
+        {
+            if (userForRegistration == null || !ModelState.IsValid)
+                return BadRequest();
+
+            var user = _mapper.Map<ApplicationUser>(userForRegistration);
+            var result = await _userManager.CreateAsync(user, userForRegistration.Password);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+
+                return BadRequest(new RegistrationResponseDto { Errors = errors });
+            }
+
+            var users = new ApplicationUser
+            {
+                Email = userForRegistration.Email,
+                UserName = userForRegistration.Email,
+            
+            };
+
+            var token = await _userManager.GenerateEmailConfirmationTokenAsync(users);
+            var param = new Dictionary<string, string?>
+            {
+                {"token", token },
+                {"email", user.Email }
+            };
+
+            var callback = QueryHelpers.AddQueryString(userForRegistration.ClientURI, param);
+
+            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "Email Confirmation token", callback, null);
+            await _emailSender.SendEmailAsync(message);
+
+            await _userManager.AddToRoleAsync(users, "Viewer");
+
+            return StatusCode(201);
+        }
+
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
+            if (user == null)
+                return BadRequest("Invalid Request");
+
+            var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
+            if (!resetPassResult.Succeeded)
+            {
+                var errors = resetPassResult.Errors.Select(e => e.Description);
+
+                return BadRequest(new { Errors = errors });
+            }
+
+            return Ok();
+        }
+
+        [HttpGet("EmailConfirmation")]
+        [Authorize]
+        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return BadRequest("Invalid Email Confirmation Request");
+
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!confirmResult.Succeeded)
+                return BadRequest("Invalid Email Confirmation Request");
+
+            return Ok();
         }
     }
 }
