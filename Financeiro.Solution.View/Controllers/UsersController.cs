@@ -396,7 +396,7 @@ namespace Financeiro.Solution.View.Controllers
             var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "Email Confirmation token", callback, null);
             await _emailSender.SendEmailAsync(message);
 
-            await _userManager.AddToRoleAsync(users, "Viewer");
+          //  await _userManager.AddToRoleAsync(users, "Viewer");
 
             return StatusCode(201);
         }
