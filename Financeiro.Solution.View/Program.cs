@@ -79,7 +79,6 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 /*Criar IdentityRole*/
 
-
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
 
