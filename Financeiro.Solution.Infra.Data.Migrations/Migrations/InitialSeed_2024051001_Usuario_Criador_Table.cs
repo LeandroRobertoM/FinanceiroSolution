@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
 {
-    [Migration(20240428)]
-    public class InitialSeed_20240428_UsuarioCreateTable : Migration
+    [Migration(2024051001)]
+    public class InitialSeed_2024051001_Usuario_Criador_Table : Migration
     {
 
         public override void Down()
         {
-            Delete.Table("UsuarioCriador");
+            Delete.Table("UsuarioCreate");
 
         }
 

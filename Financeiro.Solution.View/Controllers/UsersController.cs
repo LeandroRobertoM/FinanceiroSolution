@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Crypto;
 using Serilog;
 using System.IdentityModel.Tokens.Jwt;
@@ -68,13 +69,6 @@ namespace Financeiro.Solution.View.Controllers
                 return Unauthorized(new AuthResponseDto { ErrorMessage = "Email is not confirmed" });
             if (!await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
                 return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid Authentication" });
-
-            /*
-            var signingCredentials = _jwtHandler.GetSigningCredentials();
-            var claims = await _jwtHandler.GetClaims(user);
-            var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            */
 
             
             return Ok(new AuthResponseDto { IsAuthSuccessful = true });
@@ -191,6 +185,9 @@ namespace Financeiro.Solution.View.Controllers
                 code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
 
                 var respose_Retorn = await _userManager.ConfirmEmailAsync(user, code);
+
+
+
 
                 if (respose_Retorn.Succeeded)
                 {
@@ -359,6 +356,7 @@ namespace Financeiro.Solution.View.Controllers
             {
                 return StatusCode(500, $"Erro ao obter usuários vinculados: {ex.Message}");
             }
+
         }
 
         [HttpPost("Registration")]
@@ -373,30 +371,32 @@ namespace Financeiro.Solution.View.Controllers
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);
-
                 return BadRequest(new RegistrationResponseDto { Errors = errors });
             }
+       
 
-            var users = new ApplicationUser
-            {
-                Email = userForRegistration.Email,
-                UserName = userForRegistration.Email,
-            
-            };
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
 
-            var token = await _userManager.GenerateEmailConfirmationTokenAsync(users);
+            // retorno do email 
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
             var param = new Dictionary<string, string?>
             {
-                {"token", token },
-                {"email", user.Email }
-            };
+                    {"token", code },
+                    {"email", user.Email }
+                };
+
+           // var respose_Retorn = await _userManager.ConfirmEmailAsync(user, code);
 
             var callback = QueryHelpers.AddQueryString(userForRegistration.ClientURI, param);
 
-            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "Email Confirmation token", callback, null);
+            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(
+                new string[] { user.Email }, "Email Confirmation token", callback, null);
             await _emailSender.SendEmailAsync(message);
 
-          //  await _userManager.AddToRoleAsync(users, "Viewer");
+            // Descomente a linha abaixo se desejar adicionar o usuário a um papel específico
+            // await _userManager.AddToRoleAsync(user, "Viewer");
 
             return StatusCode(201);
         }
@@ -424,7 +424,7 @@ namespace Financeiro.Solution.View.Controllers
         }
 
         [HttpGet("EmailConfirmation")]
-        [Authorize]
+     
         public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
