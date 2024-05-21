@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
 {
     [Migration(20240428)]
-    public class UsuarioCreateTable : Migration
+    public class InitialSeed_20240428_UsuarioCreateTable : Migration
     {
 
         public override void Down()
