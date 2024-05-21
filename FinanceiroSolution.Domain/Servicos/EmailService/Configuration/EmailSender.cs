@@ -40,9 +40,15 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
             emailMessage.To.AddRange(message.To);
             emailMessage.Subject = message.Subject;
 
-            var bodyBuilder = new BodyBuilder { HtmlBody = string.Format("<h2 style='color:red;'>{0}</h2>", message.Content) };
+            var confirmationLink = message.Content; // Supondo que message.Content contenha o link de confirmação
+            var htmlContent = $@"
+                   <h2 style='color:red;'>Bem-vindo ao Sistema Financeiro Fintech</h2>
+                   <p>Para confirmar o seu email, clique abaixo:</p>
+                        <a href='{confirmationLink}'><button>Confirmar Email</button></a>";
+            var bodyBuilder = new BodyBuilder { HtmlBody = htmlContent };
 
-            if (message.Attachments != null && message.Attachments.Any())
+
+             if (message.Attachments != null && message.Attachments.Any())
             {
                 byte[] fileBytes;
                 foreach (var attachment in message.Attachments)

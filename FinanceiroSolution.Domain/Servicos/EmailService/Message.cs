@@ -20,7 +20,7 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService
         {
             To = new List<MailboxAddress>();
 
-            To.AddRange(to.Select(x => new MailboxAddress("email", x)));
+            To.AddRange(to.Select(x => new MailboxAddress("Ativação de conta Fintech Space", x)));
             Subject = subject;
             Content = content;
             Attachments = attachments;
