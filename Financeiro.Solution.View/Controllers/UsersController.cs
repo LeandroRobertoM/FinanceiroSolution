@@ -2,6 +2,7 @@
 using Financeiro.Solution.View.DTO.Login;
 using Financeiro.Solution.View.DTO.User;
 using Financeiro.Solution.View.Models;
+using Financeiro.Solution.View.Token;
 using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.ICategoria;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
@@ -41,7 +42,9 @@ namespace Financeiro.Solution.View.Controllers
         private readonly IUsuarioCreateServico _IUsuarioCreateServico;
         private readonly ILogger<CategoriaController> _logger;
         private readonly IMapper _mapper;
+        private readonly TokenJWTBuilder _jwtHandler;
         private readonly IEmailSender _emailSender;
+
 
 
         public UsersController(UserManager<ApplicationUser> userManager,
@@ -57,10 +60,10 @@ namespace Financeiro.Solution.View.Controllers
 
 
 
-        [AllowAnonymous]
+   
         [Produces("application/json")]
-        [HttpPost("/api/UsuarioLogin")]
-        public async Task<IActionResult> Login([FromBody] UserForAuthenticationDto userForAuthentication)
+        [HttpPost("/api/UsuarioLogin2")]
+        public async Task<IActionResult> Login2([FromBody] UserForAuthenticationDto userForAuthentication)
         {
             var user = await _userManager.FindByNameAsync(userForAuthentication.Email);
             if (user == null)
@@ -73,6 +76,31 @@ namespace Financeiro.Solution.View.Controllers
             
             return Ok(new AuthResponseDto { IsAuthSuccessful = true });
            
+        }
+
+
+        [HttpPost("/api/UsuarioLogin")]
+        public async Task<IActionResult> Login([FromBody] UserForAuthenticationDto userForAuthentication)
+        {
+            var user = await _userManager.FindByNameAsync(userForAuthentication.Email);
+            if (user == null)
+                return BadRequest("Invalid Request");
+
+            if (!await _userManager.IsEmailConfirmedAsync(user))
+                return Unauthorized(new AuthResponseDto { ErrorMessage = "Email is not confirmed" });
+
+            if (!await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
+            {
+
+            }
+                return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid Authentication" });
+            /*
+            var signingCredentials = _jwtHandler.GetSigningCredentials();
+            Ajustar var claims = await _jwtHandler.GetClaims(user);
+          /Ajustar  var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
+            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            */
+            return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = token });
         }
 
 
@@ -395,10 +423,7 @@ namespace Financeiro.Solution.View.Controllers
                 new string[] { user.Email }, "Email Confirmation token", callback, null);
             await _emailSender.SendEmailAsync(message);
 
-            // Descomente a linha abaixo se desejar adicionar o usuário a um papel específico
-            // await _userManager.AddToRoleAsync(user, "Viewer");
-
-            return StatusCode(201);
+            return Ok(new Resposta(200, "Criado com sucesso!"));
         }
 
 

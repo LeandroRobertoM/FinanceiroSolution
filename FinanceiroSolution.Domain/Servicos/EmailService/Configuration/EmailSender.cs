@@ -64,7 +64,7 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
             }
 
             emailMessage.Body = bodyBuilder.ToMessageBody();
-            return emailMessage;
+           return emailMessage;
         }
 
         private void Send(MimeMessage mailMessage)
