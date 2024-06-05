@@ -78,31 +78,30 @@ namespace Financeiro.Solution.View.Controllers
            
         }
 
-
         [HttpPost("/api/UsuarioLogin")]
         public async Task<IActionResult> Login([FromBody] UserForAuthenticationDto userForAuthentication)
         {
             var user = await _userManager.FindByNameAsync(userForAuthentication.Email);
             if (user == null)
-                return BadRequest("Invalid Request");
+                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Invalid Request", Token = null });
 
             if (!await _userManager.IsEmailConfirmedAsync(user))
-                return Unauthorized(new AuthResponseDto { ErrorMessage = "Email is not confirmed" });
+                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Email não confirmado ! ", Token = null });
 
             if (!await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
-            {
+                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Invalid Authentication", Token = null });
 
-            }
-                return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid Authentication" });
-            /*
-            var signingCredentials = _jwtHandler.GetSigningCredentials();
-            Ajustar var claims = await _jwtHandler.GetClaims(user);
-          /Ajustar  var tokenOptions = _jwtHandler.GenerateTokenOptions(signingCredentials, claims);
-            var token = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
-            */
-            return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = token });
+            var token = new TokenJWTBuilder()
+                .AddSecurityKey(JwtSecurityKey.Create("Secret_Key-12345678"))
+                .AddSubject("Sistema Financeiro Core")
+                .AddIssuer("Teste.Securiry.Bearer")
+                .AddAudience("Teste.Securiry.Bearer")
+                .AddClaim("Email", user.Email)
+                .AddExpiry(5)
+                .Builder();
+
+            return Ok(new AuthResponseDto { IsAuthSuccessful = true, Token = token.value });
         }
-
 
         [AllowAnonymous]
         [Produces("application/json")]
@@ -424,6 +423,32 @@ namespace Financeiro.Solution.View.Controllers
             await _emailSender.SendEmailAsync(message);
 
             return Ok(new Resposta(200, "Criado com sucesso!"));
+        }
+
+
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDto forgotPasswordDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
+            if (user == null)
+                return BadRequest("Invalid Request");
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var param = new Dictionary<string, string?>
+            {
+                {"token", token },
+                {"email", forgotPasswordDto.Email }
+            };
+
+            var callback = QueryHelpers.AddQueryString(forgotPasswordDto.ClientURI, param);
+            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "Reset password token", callback, null);
+
+            await _emailSender.SendEmailAsync(message);
+
+            return Ok();
         }
 
 
