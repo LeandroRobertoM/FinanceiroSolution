@@ -156,7 +156,7 @@ namespace Financeiro.Solution.View.Controllers
         public async Task<IActionResult> UpdateUser(ApplicationUser updatedUser)
         {
             // Encontra o usuário com base no ID
-            var user = await _userManager.FindByIdAsync(updatedUser.Id);
+            var user = await _userManager.FindByEmailAsync(updatedUser.Email);
             if (user == null)
             {
                 return NotFound("Usuário não encontrado");
