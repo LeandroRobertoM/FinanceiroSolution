@@ -27,6 +27,7 @@ using Financeiro.Solution.View.Extensions;
 using Financeiro.Solution.Infra.Tests;
 using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
 using FinanceiroSolution.Domain.Servicos.EmailService;
+using FinanceiroSolution.Domain.Interfaces.IPagamento;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
@@ -59,6 +60,7 @@ builder.Services.AddSingleton<InterfaceDespesa, DespesaRepository>();
 builder.Services.AddSingleton<InterfaceSistemaFinanceiro, SistemaFinanceiroRepository>();
 builder.Services.AddSingleton<InterfaceUserSistemaFinanceiro, UsuarioSistemaFinanceiroRepository>();
 builder.Services.AddSingleton<InterfaceUsuarioCreate, UsuarioCriadorRepository>();
+builder.Services.AddSingleton<InterfacePagamento, PagamentoRepository>();
 
 
 
@@ -68,6 +70,7 @@ builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
 builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
 builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
 builder.Services.AddSingleton<IUsuarioCreateServico, UsuarioCreateServico>();
+builder.Services.AddSingleton<IPagamentoServico, PagamentoServico>();
 
 
 // SERVIÇO DE EMAIL
