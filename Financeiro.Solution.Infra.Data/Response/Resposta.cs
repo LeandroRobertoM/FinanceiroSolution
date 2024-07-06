@@ -18,5 +18,15 @@ namespace Financeiro.Solution.Infra.Data.Response
             OperacaoSucesso = operacaoSucesso;
             MensagemErro = mensagemErro;
         }
+
+
+        // este metodo foi criado para retornar dados 
+        public Resposta(bool operacaoSucesso, string mensagemErro, T dados)
+        {
+            OperacaoSucesso = operacaoSucesso;
+            MensagemErro = mensagemErro;
+            Dados = dados;
+        }
     }
 }
+

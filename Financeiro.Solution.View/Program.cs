@@ -14,6 +14,7 @@ using FinanceiroSolution.Domain.Interfaces.ISistemaFinanceiro;
 using FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro;
 using FinanceiroSolution.Domain.Interfaces.Servicos;
 using FinanceiroSolution.Domain.Servicos;
+using Financeiro.Solution.Testes;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
@@ -22,23 +23,35 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using Serilog;
+using Financeiro.Solution.View.Extensions;
+using Financeiro.Solution.Infra.Tests;
+using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
+using FinanceiroSolution.Domain.Servicos.EmailService;
+using FinanceiroSolution.Domain.Interfaces.IPagamento;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
 
+var configuration = builder.Configuration;
+
 startup.ConfigureServices(builder.Services);
 builder.Services.AddControllers();
+
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<EntityFramework>(options =>
                options.UseSqlServer(
                    builder.Configuration.GetConnectionString("SqlConnection")));
-builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<ApplicationUser>()
     .AddEntityFrameworkStores<EntityFramework>();
+
+
 
 
 // INTERFACE E REPOSITORIO
@@ -46,16 +59,33 @@ builder.Services.AddSingleton<InterfaceCategoria, CategoriaRepository>();
 builder.Services.AddSingleton<InterfaceDespesa, DespesaRepository>();
 builder.Services.AddSingleton<InterfaceSistemaFinanceiro, SistemaFinanceiroRepository>();
 builder.Services.AddSingleton<InterfaceUserSistemaFinanceiro, UsuarioSistemaFinanceiroRepository>();
+builder.Services.AddSingleton<InterfaceUsuarioCreate, UsuarioCriadorRepository>();
+builder.Services.AddSingleton<InterfacePagamento, PagamentoRepository>();
 
 
 
-// SERVI�O DOMINIO
+// SERVIÇO DOMINIO
 builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
 builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
 builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
 builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
+builder.Services.AddSingleton<IUsuarioCreateServico, UsuarioCreateServico>();
+builder.Services.AddSingleton<IPagamentoServico, PagamentoServico>();
 
 
+// SERVIÇO DE EMAIL
+var emailConfig = builder.Configuration
+        .GetSection("EmailConfiguration")
+        .Get<EmailConfiguration>();
+builder.Services.AddSingleton(emailConfig);
+builder.Services.AddAutoMapper(typeof(Program));
+
+/*Criar IdentityRole*/
+
+builder.Services.AddScoped<IEmailSender, EmailSender>();
+
+
+builder.Services.AddControllers();
 
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -95,7 +125,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 //builder.Services.AddAuthentication();
 
-// Processo gera��o de LOG
+// Processo geração de LOG
 
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
@@ -107,14 +137,21 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
-app.MigrateDatabase();
+app.MigrateDatabase(configuration);
+app.MigrateDatabase(configuration);
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+// Configure the HTTP request pipeline testes .
+Log.Information("Configuring Swagger passou na program. Verificar..");
+if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
     app.UseSwagger();
+    app.ConfigSwagger();
     app.UseSwaggerUI();
+
+    // Log depois da configuração do Swagger
+    Log.Information("Swagger configuration completedpassou na programpassou na programpassou na program.");
 }
+
 
 
 var devClient = "http://localhost:4200";

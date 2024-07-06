@@ -27,7 +27,6 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Migrations
             Create.Table("Employees")
                 .WithColumn("Id").AsGuid().NotNullable().PrimaryKey()
                 .WithColumn("Name").AsString(50).NotNullable()
-                .WithColumn("testes").AsString(50).NotNullable()
                 .WithColumn("Age").AsInt32().NotNullable()
                 .WithColumn("Position").AsString(50).NotNullable()
                 .WithColumn("CompanyId").AsGuid().NotNullable().ForeignKey("Companies", "Id");
