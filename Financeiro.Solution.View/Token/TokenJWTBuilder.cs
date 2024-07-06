@@ -38,6 +38,8 @@ namespace Financeiro.Solution.View.Token
             return this;
         }
 
+
+
         public TokenJWTBuilder AddClaim(string type, string value)
         {
             this.claims.Add(type, value);

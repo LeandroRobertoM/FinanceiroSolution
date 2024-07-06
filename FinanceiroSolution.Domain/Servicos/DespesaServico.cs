@@ -1,6 +1,8 @@
 ﻿using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Interfaces.IDespesa;
+using FinanceiroSolution.Domain.Interfaces.IResposta;
 using FinanceiroSolution.Domain.Interfaces.Servicos;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,21 +14,53 @@ namespace FinanceiroSolution.Domain.Servicos
     public class DespesaServico : IDespesaServico
     {
         private readonly InterfaceDespesa _interfaceDespesa;
+        private readonly ILogger<DespesaServico> _logger;
 
-        public DespesaServico(InterfaceDespesa interfaceDespesa)
+        public DespesaServico(InterfaceDespesa interfaceDespesa, ILogger<DespesaServico> logger)
         {
             _interfaceDespesa=interfaceDespesa;
+            _logger=logger;
         }
 
-        public async Task AdicionarDespesa(Despesa despesa)
+        public async Task<bool> AdicionarDespesa(Despesa despesa)
         {
             var data = DateTime.UtcNow;
             despesa.DataCadastro = data;
+            despesa.DataAlteracao = data;
             despesa.Ano = data.Year;
             despesa.Mes = data.Month;
             var valido = despesa.validarPropriedadeString(despesa.Nome, "Nome");
             if (valido)
-                await _interfaceDespesa.Add(despesa);
+
+                try
+                {
+                    IResposta<bool> resposta = await _interfaceDespesa.AdicionarDespesa(despesa);
+
+                    if (resposta.OperacaoSucesso == false) 
+                    {
+                        Console.WriteLine("Falha ao adicionar a Despesa: " + resposta.MensagemErro);
+                        _logger.LogInformation("Falha ao adicionar a Despesa: " + resposta.MensagemErro);
+                        return false;
+                    }
+                    else
+                    {
+                        _logger.LogInformation("Categoria Despesa com sucesso!");
+                    }
+                }
+                catch (Exception ex)
+                {
+
+
+                    Console.WriteLine("Ocorreu um erro ao adicionar a Despesa: " + ex.Message);
+                    // Ou utilize sua biblioteca de log preferida para registrar o erro
+
+                    // Trate o erro aqui
+                    // ...
+
+                }
+                return false;
+
+
         }
 
         public async Task AtualizarDespesa(Despesa despesa)
@@ -57,7 +91,7 @@ namespace FinanceiroSolution.Domain.Servicos
             var despesas_pendentes = despesasUsuario.Where(d => !d.Pago && d.TipoDespesa == Enums.EnumTipoDespesa.Contas)
                 .Sum(x => x.Valor);
 
-            var investimentos = despesasUsuario.Where(d => d.TipoDespesa == Enums.EnumTipoDespesa.Contas)
+            var investimentos = despesasUsuario.Where(d => d.TipoDespesa == Enums.EnumTipoDespesa.Investimento)
                 .Sum(x => x.Valor);
 
             return new
