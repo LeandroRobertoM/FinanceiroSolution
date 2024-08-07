@@ -13,6 +13,7 @@ using FinanceiroSolution.Domain.Servicos.EmailService;
 using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -83,13 +84,13 @@ namespace Financeiro.Solution.View.Controllers
         {
             var user = await _userManager.FindByNameAsync(userForAuthentication.Email);
             if (user == null)
-                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Invalid Request", Token = null });
+                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "E-mail não encontrado!", Token = null });
 
             if (!await _userManager.IsEmailConfirmedAsync(user))
-                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Email não confirmado ! ", Token = null });
+                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "E-mail não confirmado ! ", Token = null });
 
             if (!await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
-                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Invalid Authentication", Token = null });
+                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Senha Incorreta !", Token = null });
 
             var token = new TokenJWTBuilder()
                 .AddSecurityKey(JwtSecurityKey.Create("Secret_Key-12345678"))
@@ -434,7 +435,7 @@ namespace Financeiro.Solution.View.Controllers
 
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             if (user == null)
-                return BadRequest("Invalid Request");
+                return BadRequest(new ForgotResponseDto { IsSuccess = false, ErrorMessage = "Dados de entrada Invalidos." });
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var param = new Dictionary<string, string?>
@@ -448,7 +449,8 @@ namespace Financeiro.Solution.View.Controllers
 
             await _emailSender.SendEmailAsync(message);
 
-            return Ok();
+
+            return Ok(new ForgotResponseDto { IsSuccess = true, Message = "Senha resetada com sucesso. Verifique seu e-mail para mais instruções."});
         }
 
 
@@ -456,21 +458,23 @@ namespace Financeiro.Solution.View.Controllers
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest();
+                return BadRequest(new ForgotResponseDto { IsSuccess=false, ErrorMessage="Dados de entrada Invalidos."});
 
             var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
             if (user == null)
-                return BadRequest("Invalid Request");
+                return BadRequest(new ForgotResponseDto { IsSuccess = false, ErrorMessage = "E-mail não encontrado",Message=resetPasswordDto.Email });
+
+
 
             var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
             if (!resetPassResult.Succeeded)
             {
                 var errors = resetPassResult.Errors.Select(e => e.Description);
 
-                return BadRequest(new { Errors = errors });
+                return BadRequest(new ForgotResponseDto { IsSuccess = false, ErrorMessage = string.Join(", ", errors) });
             }
 
-            return Ok();
+            return Ok(new ForgotResponseDto { IsSuccess = true, ErrorMessage = "Senha resetada com sucesso. Verifique seu e-mail para mais instruções.", Message = resetPasswordDto.Email });
         }
 
         [HttpGet("EmailConfirmation")]
