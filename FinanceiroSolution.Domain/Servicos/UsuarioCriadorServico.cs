@@ -34,29 +34,17 @@ namespace FinanceiroSolution.Domain.Servicos
 
                 if (resposta.OperacaoSucesso == false)
                 {
-                    Console.WriteLine("Falha ao adicionar a categoria: " + resposta.MensagemErro);
-                    _logger.LogInformation("Falha ao adicionar a categoria: " + resposta.MensagemErro);
                     return false;
                 }
                 else
                 {
-                    _logger.LogInformation("Categoria adicionada com sucesso!");
-                    // Faça algo se a operação for bem-sucedida
-                    // ...
-
+                  
                     return true;
                 }
             }
             catch (Exception ex)
             {
-
-
                 Console.WriteLine("Ocorreu um erro ao adicionar a categoria: " + ex.Message);
-                // Ou utilize sua biblioteca de log preferida para registrar o erro
-
-                // Trate o erro aqui
-                // ...
-
             }
             return false;
         }

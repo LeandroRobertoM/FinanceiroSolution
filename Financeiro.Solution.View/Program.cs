@@ -27,6 +27,7 @@ using Financeiro.Solution.Infra.Tests;
 using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
 using FinanceiroSolution.Domain.Servicos.EmailService;
 using FinanceiroSolution.Domain.Interfaces.IPagamento;
+using FinanceiroSolution.Domain.Interfaces.IApplicationUser;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
@@ -60,6 +61,7 @@ builder.Services.AddSingleton<InterfaceSistemaFinanceiro, SistemaFinanceiroRepos
 builder.Services.AddSingleton<InterfaceUserSistemaFinanceiro, UsuarioSistemaFinanceiroRepository>();
 builder.Services.AddSingleton<InterfaceUsuarioCreate, UsuarioCriadorRepository>();
 builder.Services.AddSingleton<InterfacePagamento, PagamentoRepository>();
+builder.Services.AddSingleton<InterfaceApplicationUser, ApplicationUserRepository>();
 
 
 

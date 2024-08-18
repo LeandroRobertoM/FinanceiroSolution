@@ -25,6 +25,11 @@ namespace FinanceiroSolution.Domain.Servicos
             await _interfaceUserSistemaFinanceiro.Add(usuarioSistemaFinanceiro);
         }
 
+        public Task CadastrarUsuarioNoSistemaLista(UsuarioSistemaFinanceiro usuarioSistemaFinanceiro)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task AdicionarListaSistemasUsuario(List<UsuarioSistemaFinanceiro> usuarioSistemaFinanceiro)
         {
             try
@@ -50,6 +55,8 @@ namespace FinanceiroSolution.Domain.Servicos
                 // ...
             }
         }
+
+        
     }
 
 }

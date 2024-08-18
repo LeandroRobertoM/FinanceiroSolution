@@ -36,19 +36,31 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
         private MimeMessage CreateEmailMessage(Message message)
         {
             var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress("email", _emailConfig.From));
+            emailMessage.From.Add(new MailboxAddress("Seu Nome", _emailConfig.From));
             emailMessage.To.AddRange(message.To);
             emailMessage.Subject = message.Subject;
 
             var confirmationLink = message.Content; // Supondo que message.Content contenha o link de confirmação
             var htmlContent = $@"
-                   <h2 style='color:red;'>Bem-vindo ao Sistema Financeiro Fintech</h2>
-                   <p>Para confirmar o seu email, clique abaixo:</p>
-                        <a href='{confirmationLink}'><button>Confirmar Email</button></a>";
+        <div style='font-family: Arial, sans-serif;'>
+            <img src='https://exemplo.com/imagem_logo.png' alt='NDD Logo' style='display:block; margin: 0 auto;'/>
+            <h2 style='color:#000000;'>Olá! Desejamos boas-vindas!</h2>
+            <p>A partir de agora, você pode utilizar nosso sistema <strong>Fintech</strong>.
+            Para ativar sua conta, clique no botão abaixo:</p>
+            <a href='{confirmationLink}' style='text-decoration:none;'>
+                <button style='background-color:#00b894; color:white; border:none; padding:15px 30px; text-align:center; display:block; margin: 20px auto; cursor:pointer;'>
+                    Ativar conta
+                </button>
+            </a>
+            <p>Você tem 24h para ativar sua conta, ok? Depois desse período, solicite um novo acesso à Fintech.
+            Caso já tenha ativado, você pode <a href='https://ndd.com.br'>Teste</a>.</p>
+            <p>Até breve!<br>Equipe Fintech</p>
+            <img src='https://exemplo.com/imagem_footer.png' alt='Footer Image' style='display:block; margin: 0 auto;'/>
+        </div>";
+
             var bodyBuilder = new BodyBuilder { HtmlBody = htmlContent };
 
-
-             if (message.Attachments != null && message.Attachments.Any())
+            if (message.Attachments != null && message.Attachments.Any())
             {
                 byte[] fileBytes;
                 foreach (var attachment in message.Attachments)
@@ -64,8 +76,9 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
             }
 
             emailMessage.Body = bodyBuilder.ToMessageBody();
-           return emailMessage;
+            return emailMessage;
         }
+
 
         private void Send(MimeMessage mailMessage)
         {

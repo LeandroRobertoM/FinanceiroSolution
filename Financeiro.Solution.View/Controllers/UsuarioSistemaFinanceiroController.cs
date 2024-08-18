@@ -61,6 +61,30 @@ namespace Financeiro.Solution.View.Controllers
             return Task.FromResult(true);
         }
 
+
+        [HttpPost("/api/CadastrarUsuarioNoSistemaLista")]
+        [Produces("application/json")]
+        public async Task<object> CadastrarUsuarioNoSistemaLista(int IdSistema, string emailUsuario)
+        {
+            try
+            {
+                await _IUsuarioSistemasFinanceiroServico.CadastrarUsuarioNoSistemaLista(
+                new UsuarioSistemaFinanceiro
+                {
+                    IdSistema = IdSistema,
+                    EmailUsuario = emailUsuario,
+                    Administrador = false,
+                    SistemaAtual = true
+                });
+            }
+            catch (Exception)
+            {
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
+
         [HttpPost("/api/CadastrarUsuarioListaSistemas")]
         [Produces("application/json")]
         public async Task<object> CadastrarUsuarioListaSistemas(UsuarioSistemasDTO usuarioSistemasDTO)
