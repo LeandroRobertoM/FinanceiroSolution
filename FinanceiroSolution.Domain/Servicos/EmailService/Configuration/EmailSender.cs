@@ -43,7 +43,7 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
             var confirmationLink = message.Content; // Supondo que message.Content contenha o link de confirmação
             var htmlContent = $@"
         <div style='font-family: Arial, sans-serif;'>
-            <img src='https://exemplo.com/imagem_logo.png' alt='NDD Logo' style='display:block; margin: 0 auto;'/>
+            <img src='https://techserra.com.br/email/confirmacao/imagem_logo.png' alt='NDD Logo' style='display:block; margin: 0 auto;'/>
             <h2 style='color:#000000;'>Olá! Desejamos boas-vindas!</h2>
             <p>A partir de agora, você pode utilizar nosso sistema <strong>Fintech</strong>.
             Para ativar sua conta, clique no botão abaixo:</p>
@@ -53,9 +53,9 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
                 </button>
             </a>
             <p>Você tem 24h para ativar sua conta, ok? Depois desse período, solicite um novo acesso à Fintech.
-            Caso já tenha ativado, você pode <a href='https://ndd.com.br'>Teste</a>.</p>
+            Caso já tenha ativado, você pode <a href='https://techserra.com.br'>Teste</a>.</p>
             <p>Até breve!<br>Equipe Fintech</p>
-            <img src='https://exemplo.com/imagem_footer.png' alt='Footer Image' style='display:block; margin: 0 auto;'/>
+            <img src='https://techserra.com.br/email/confirmacao/imagem_footer.png' alt='Footer Image' style='display:block; margin: 0 auto;'/>
         </div>";
 
             var bodyBuilder = new BodyBuilder { HtmlBody = htmlContent };
