@@ -529,6 +529,20 @@ namespace Financeiro.Solution.View.Controllers
             return Ok(new ForgotResponseDto { IsSuccess = true, ErrorMessage = successMessage, Message = resetPasswordDto.Email });
         }
 
+        [HttpGet("EmailConfirmation")]
+        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+                return BadRequest("Invalid Email Confirmation Request");
+
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!confirmResult.Succeeded)
+                return BadRequest("Invalid Email Confirmation Request");
+            return Ok();
+        }
+    }
+
         [HttpGet("ResetEmailConfirmation")]
         public async Task<IActionResult> ResetEmailConfirmation([FromQuery] string email, [FromQuery] string token)
         {
