@@ -1,11 +1,10 @@
-﻿
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MimeKit;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-
-using System.Text;
 using System.Threading.Tasks;
 
 namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
@@ -22,63 +21,96 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
         public void SendEmail(Message message)
         {
             var emailMessage = CreateEmailMessage(message);
-
             Send(emailMessage);
         }
 
         public async Task SendEmailAsync(Message message)
         {
             var mailMessage = CreateEmailMessage(message);
-
             await SendAsync(mailMessage);
         }
 
         private MimeMessage CreateEmailMessage(Message message)
         {
             var emailMessage = new MimeMessage();
-            emailMessage.From.Add(new MailboxAddress("Seu Nome", _emailConfig.From));
+            emailMessage.From.Add(new MailboxAddress("Fintech - Controle de Gastos", _emailConfig.From));
             emailMessage.To.AddRange(message.To);
             emailMessage.Subject = message.Subject;
 
-            var confirmationLink = message.Content; // Supondo que message.Content contenha o link de confirmação
-            var htmlContent = $@"
-        <div style='font-family: Arial, sans-serif;'>
-            <img src='https://techserra.com.br/email/confirmacao/imagem_logo.png' alt='NDD Logo' style='display:block; margin: 0 auto;'/>
-            <h2 style='color:#000000;'>Olá! Desejamos boas-vindas!</h2>
-            <p>A partir de agora, você pode utilizar nosso sistema <strong>Fintech</strong>.
-            Para ativar sua conta, clique no botão abaixo:</p>
-            <a href='{confirmationLink}' style='text-decoration:none;'>
-                <button style='background-color:#00b894; color:white; border:none; padding:15px 30px; text-align:center; display:block; margin: 20px auto; cursor:pointer;'>
-                    Ativar conta
-                </button>
-            </a>
-            <p>Você tem 24h para ativar sua conta, ok? Depois desse período, solicite um novo acesso à Fintech.
-            Caso já tenha ativado, você pode <a href='https://techserra.com.br'>Teste</a>.</p>
-            <p>Até breve!<br>Equipe Fintech</p>
-            <img src='https://techserra.com.br/email/confirmacao/imagem_footer.png' alt='Footer Image' style='display:block; margin: 0 auto;'/>
-        </div>";
+          
+            var htmlContent = GetEmailContent(message.Subject, message.Content);
 
+            // Monta o corpo do email com HTML e anexos
             var bodyBuilder = new BodyBuilder { HtmlBody = htmlContent };
-
-            if (message.Attachments != null && message.Attachments.Any())
-            {
-                byte[] fileBytes;
-                foreach (var attachment in message.Attachments)
-                {
-                    using (var ms = new MemoryStream())
-                    {
-                        attachment.CopyTo(ms);
-                        fileBytes = ms.ToArray();
-                    }
-
-                    bodyBuilder.Attachments.Add(attachment.FileName, fileBytes, ContentType.Parse(attachment.ContentType));
-                }
-            }
+            AddAttachments(bodyBuilder, message.Attachments);
 
             emailMessage.Body = bodyBuilder.ToMessageBody();
             return emailMessage;
         }
 
+        private string GetEmailContent(string subject, string confirmationLink)
+        {
+            if (subject.Equals("reiniciar a senha do usuario"))
+            {
+                return GetPasswordResetEmail(confirmationLink);
+            }
+
+            return GetAccountActivationEmail(confirmationLink);
+        }
+
+        private string GetPasswordResetEmail(string confirmationLink)
+        {
+            return $@"<div style='font-family: Arial, sans-serif;'>
+                <div style=""background-color: #000000; padding: 15px; text-align: center; color: white;"">
+                    <p style=""margin: 0;"">Fintech IA</p>
+                </div>
+                <h2 style='color:#000000;'>Família Fintech!</h2>
+                <p>Recebemos uma solicitação para reinicializar a senha da sua conta no nosso sistema de controle financeiro,se você não fez essa solicitação, por favor ignore este e-mail. Caso contrário, clique no link abaixo para redefinir sua senha:</p>
+                <a href='{confirmationLink}' style='text-decoration:none;'>
+                    <button style='background-color:#3f22d1; color:white; border:none; padding:15px 30px; text-align:center; display:block; margin: 20px auto; cursor:pointer;'>Redefinir Senha!</button>
+                </a>
+               <p>Você tem 24h para ativar sua conta, ok? Depois desse período, solicite um novo acesso à Fintech. Caso já tenha ativado, você pode <a href='https://techserra.com.br'>acessar o sistema</a>.</p>
+                <p>Até breve!<br> Fintech</p>
+                <div style=""background-color: #000000; padding: 20px; text-align: center; color: white;"">
+                    <p style=""margin: 0;"">© 2024 Fintech. Todos os direitos reservados.</p>
+                </div>
+            </div>";
+        }
+
+        private string GetAccountActivationEmail(string confirmationLink)
+        {
+            return $@"<div style='font-family: Arial, sans-serif;'>
+                <div style=""background-color: #000000; padding: 15px; text-align: center; color: white;"">
+                    <p style=""margin: 0;"">Fintech IA</p>
+                </div>
+                <h2 style='color:#000000;'>Olá! Seja Bem Vindo!</h2>
+                <p>A partir de agora, você pode utilizar nosso sistema de controle de gastos <strong>Fintech</strong>. Para ativar sua conta, clique no botão abaixo:</p>
+                <a href='{confirmationLink}' style='text-decoration:none;'>
+                    <button style='background-color:#3f22d1; color:white; border:none; padding:15px 30px; text-align:center; display:block; margin: 20px auto; cursor:pointer;'>Ativar conta</button>
+                </a>
+                <p>Você tem 24h para ativar sua conta, ok? Depois desse período, solicite um novo acesso à Fintech. Caso já tenha ativado, você pode <a href='https://techserra.com.br'>acessar o sistema</a>.</p>
+                <p>Até breve!<br> Fintech</p>
+                <div style=""background-color: #000000; padding: 20px; text-align: center; color: white;"">
+                    <p style=""margin: 0;"">© 2024 Fintech. Todos os direitos reservados.</p>
+                </div>
+            </div>";
+        }
+
+        // Método ajustado para IFormFileCollection
+        private void AddAttachments(BodyBuilder bodyBuilder, IFormFileCollection attachments)
+        {
+            if (attachments != null && attachments.Any())
+            {
+                foreach (var file in attachments)
+                {
+                    using (var ms = new MemoryStream())
+                    {
+                        file.CopyTo(ms);
+                        bodyBuilder.Attachments.Add(file.FileName, ms.ToArray(), ContentType.Parse(file.ContentType));
+                    }
+                }
+            }
+        }
 
         private void Send(MimeMessage mailMessage)
         {
@@ -94,7 +126,6 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
                 }
                 catch
                 {
-                    //log an error message or throw an exception, or both.
                     throw;
                 }
                 finally
@@ -119,7 +150,6 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
                 }
                 catch
                 {
-                    //log an error message or throw an exception, or both.
                     throw;
                 }
                 finally
@@ -131,5 +161,3 @@ namespace FinanceiroSolution.Domain.Servicos.EmailService.Configuration
         }
     }
 }
-
-

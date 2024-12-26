@@ -28,6 +28,7 @@ using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
 using FinanceiroSolution.Domain.Servicos.EmailService;
 using FinanceiroSolution.Domain.Interfaces.IPagamento;
 using FinanceiroSolution.Domain.Interfaces.IApplicationUser;
+using FinanceiroSolution.Domain.Interfaces.IDespesa.IDespesaRecorrente;
 
 var builder = WebApplication.CreateBuilder(args);
 var startup = new Startup(builder.Configuration);
@@ -57,6 +58,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>()
 // INTERFACE E REPOSITORIO
 builder.Services.AddSingleton<InterfaceCategoria, CategoriaRepository>();
 builder.Services.AddSingleton<InterfaceDespesa, DespesaRepository>();
+builder.Services.AddSingleton<InterfaceDespesaRecorrente, DespesaRecorrenciaRepository>();
 builder.Services.AddSingleton<InterfaceSistemaFinanceiro, SistemaFinanceiroRepository>();
 builder.Services.AddSingleton<InterfaceUserSistemaFinanceiro, UsuarioSistemaFinanceiroRepository>();
 builder.Services.AddSingleton<InterfaceUsuarioCreate, UsuarioCriadorRepository>();
@@ -65,9 +67,11 @@ builder.Services.AddSingleton<InterfaceApplicationUser, ApplicationUserRepositor
 
 
 
+
 // SERVIÇO DOMINIO
 builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
 builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
+builder.Services.AddSingleton<IDespesaRecorrenteServico, DespesaRecorrenteServico>();
 builder.Services.AddSingleton<ISistemaFinanceiroServico, SistemaFinanceiroServico>();
 builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFinanceiroServico>();
 builder.Services.AddSingleton<IUsuarioCreateServico, UsuarioCreateServico>();
@@ -156,12 +160,17 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 
 
 var devClient = "http://localhost:4200";
+var prdClient1 = "http://164.163.10.101:8080";
+var prdClient2 = "http://techserra.com.br:8080";
+var hmlClient = "http://192.168.0.106:8080";
 
 app.UseCors(x =>
-x.AllowAnyOrigin()
-.AllowAnyMethod()
-.AllowAnyHeader()
-.WithOrigins(devClient));
+{
+    x.AllowAnyMethod()
+     .AllowAnyHeader()
+     .WithOrigins(devClient, prdClient1, prdClient2, hmlClient)
+     .AllowCredentials();  // Use this if you need to send cookies or HTTP authentication
+});
 
 
 app.UseHttpsRedirection();

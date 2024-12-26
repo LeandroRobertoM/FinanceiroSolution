@@ -51,10 +51,18 @@ namespace Financeiro.Solution.View.Controllers
         private readonly TokenJWTBuilder _jwtHandler;
         private readonly IEmailSender _emailSender;
 
+        private readonly ILogger<UsersController> _loggerUser;
+
 
 
         public UsersController(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager, InterfaceUsuarioCreate interfaceUsuarioCreate, InterfaceApplicationUser interfaceApplicationUser, IUsuarioCreateServico IUsuarioCreateServico, IMapper mapper, IEmailSender emailSender)
+                        SignInManager<ApplicationUser> signInManager,
+                        InterfaceUsuarioCreate interfaceUsuarioCreate,
+                        InterfaceApplicationUser interfaceApplicationUser,
+                        IUsuarioCreateServico IUsuarioCreateServico,
+                        IMapper mapper,
+                        IEmailSender emailSender,
+                        ILogger<UsersController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -63,6 +71,7 @@ namespace Financeiro.Solution.View.Controllers
             _IUsuarioCreateServico = IUsuarioCreateServico;
             _emailSender = emailSender;
             _mapper = mapper;
+            _loggerUser = logger ?? throw new ArgumentNullException(nameof(logger)); // Garantir que o logger não seja nulo
         }
 
 
@@ -232,7 +241,7 @@ namespace Financeiro.Solution.View.Controllers
                 var errors = result.Errors.Select(e => e.Description);
                 return BadRequest(new RegistrationResponseDto { Errors = errors });
             }
-
+            
             var userId = user.Id;
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -246,15 +255,15 @@ namespace Financeiro.Solution.View.Controllers
                {"email", user.Email }
             };
 
-            var respose_Retorn = await _userManager.ConfirmEmailAsync(user, code);
+            //var respose_Retorn = await _userManager.ConfirmEmailAsync(user, code);
 
             var callback = QueryHelpers.AddQueryString(login.ClientURI, param);
 
             var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(
-                new string[] { user.Email }, "Email Confirmation token", callback, null);
+                new string[] { user.Email }, "Confirmação de E-mail", callback, null);
             await _emailSender.SendEmailAsync(message);
 
-            if (respose_Retorn.Succeeded)
+            if (result.Succeeded)
             {
 
                 if (login.IdUsuarioLogado != null)
@@ -487,7 +496,7 @@ namespace Financeiro.Solution.View.Controllers
 
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             if (user == null)
-                return BadRequest(new ForgotResponseDto { IsSuccess = false, ErrorMessage = "Dados de entrada Invalidos." });
+                return BadRequest(new ForgotResponseErrorDto { IsSuccess = false, ErrorMessage = "Dados de entrada Invalidos." });
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var param = new Dictionary<string, string?>
@@ -497,7 +506,7 @@ namespace Financeiro.Solution.View.Controllers
             };
 
             var callback = QueryHelpers.AddQueryString(forgotPasswordDto.ClientURI, param);
-            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "Reset password token", callback, null);
+            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "reiniciar a senha do usuario", callback, null);
 
             await _emailSender.SendEmailAsync(message);
 
@@ -509,28 +518,28 @@ namespace Financeiro.Solution.View.Controllers
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(new ForgotResponseDto { IsSuccess = false, ErrorMessage = "Dados de entrada inválidos." });
+                return BadRequest(new ForgotResponseErrorDto { IsSuccess = false, ErrorMessage = "Dados de entrada inválidos." });
 
             var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
             if (user == null)
-                return BadRequest(new ForgotResponseDto { IsSuccess = false, ErrorMessage = "E-mail não encontrado", Message = resetPasswordDto.Email });
+                return BadRequest(new ForgotResponseErrorDto { IsSuccess = false, ErrorMessage = "E-mail não encontrado", Message = resetPasswordDto.Email });
 
             var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
             if (!resetPassResult.Succeeded)
             {
                 var errors = resetPassResult.Errors.Select(e => e.Description);
-                return BadRequest(new ForgotResponseDto { IsSuccess = false, ErrorMessage = string.Join(", ", errors) });
+                return BadRequest(new ForgotResponseErrorDto { IsSuccess = false, ErrorMessage = string.Join(", ", errors) });
             }
 
             var successMessage = resetPasswordDto.EnumTipo == EnumTipoOperacao.Cadastro
                 ? "Senha resetada com sucesso."
                 : "Senha resetada com sucesso. Verifique seu e-mail para mais instruções.";
 
-            return Ok(new ForgotResponseDto { IsSuccess = true, ErrorMessage = successMessage, Message = resetPasswordDto.Email });
+            return Ok(new ForgotResponseDto { IsSuccess = true, Message = successMessage });
         }
 
-        [HttpGet("ResetEmailConfirmation")]
-        public async Task<IActionResult> ResetEmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        [HttpGet("EmailConfirmation")]
+        public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
@@ -539,25 +548,53 @@ namespace Financeiro.Solution.View.Controllers
             var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
             if (!confirmResult.Succeeded)
                 return BadRequest("Invalid Email Confirmation Request");
+            return Ok();
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet("ResetEmailConfirmation")]
+        public async Task<IActionResult> ResetEmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        {
+            _loggerUser.LogInformation("Iniciando processo de confirmação de e-mail para {Email}", email);
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                _loggerUser.LogWarning("Email {Email} não encontrado", email);
+                return BadRequest("Email não encontrado");
+            }
+
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!confirmResult.Succeeded)
+            {
+                _loggerUser.LogError("Não foi possível confirmar o e-mail para {Email}. Erros: {Errors}", email, confirmResult.Errors);
+                return BadRequest("Não foi possível confirmar o e-mail");
+            }
+
+            _loggerUser.LogInformation("E-mail confirmado com sucesso para {Email}", email);
 
             // Gera um novo token de redefinição de senha
-
             var tokens = await _userManager.GeneratePasswordResetTokenAsync(user);
+            _loggerUser.LogInformation("Token de redefinição de senha gerado para {Email}", email);
 
             var param = new Dictionary<string, string?>
-            {
-                {"token", tokens },
-                {"email", email }
-            };
-            var ClientURI = "http://localhost:4200/authentication/resetpassword";
-            var callback = QueryHelpers.AddQueryString(ClientURI, param);
-            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "Confirmação testes", callback, null);
+    {
+        {"token", tokens },
+        {"email", email }
+    };
 
+            var clientURI = "http://techserra.com.br:8080/authentication/resetpassword";
+            var callback = QueryHelpers.AddQueryString(clientURI, param);
+            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "Confirmação Ativando Usuario", callback, null);
+            _loggerUser.LogInformation("log Confirmação Ativando Usuario testes deu certo {Email}");
             await _emailSender.SendEmailAsync(message);
+            _loggerUser.LogInformation("E-mail de confirmação enviado para {Email}", email);
 
             // Retorna o token de redefinição de senha para o frontend
-            return Ok(new { Message = "Email confirmed. Redirect to reset password.", PasswordResetToken = tokens, Email = email });
+            return Ok(new { Message = "E-mail confirmado" });
         }
     }
 }
+
 

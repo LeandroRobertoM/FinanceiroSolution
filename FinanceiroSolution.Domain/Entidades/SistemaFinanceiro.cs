@@ -31,5 +31,7 @@ namespace FinanceiroSolution.Domain.Entidades
 
         }
         public SistemaFinanceiro() { }
+
+        public SistemaFinanceiro(int Id, string nome, int ano) { }
     }
 }
