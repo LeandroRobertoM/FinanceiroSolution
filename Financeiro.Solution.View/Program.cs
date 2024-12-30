@@ -1,4 +1,3 @@
-
 using Financeiro.Solution.Infra.Data.Configuracao;
 using Financeiro.Solution.Infra.Data.Migrations;
 using Financeiro.Solution.Infra.Data.Migrations.Context;
@@ -23,7 +22,6 @@ using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using Serilog;
 using Financeiro.Solution.View.Extensions;
-using Financeiro.Solution.Infra.Tests;
 using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
 using FinanceiroSolution.Domain.Servicos.EmailService;
 using FinanceiroSolution.Domain.Interfaces.IPagamento;
@@ -38,8 +36,6 @@ var configuration = builder.Configuration;
 startup.ConfigureServices(builder.Services);
 builder.Services.AddControllers();
 
-
-
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -52,9 +48,6 @@ builder.Services.AddDbContext<EntityFramework>(options =>
 builder.Services.AddDefaultIdentity<ApplicationUser>()
     .AddEntityFrameworkStores<EntityFramework>();
 
-
-
-
 // INTERFACE E REPOSITORIO
 builder.Services.AddSingleton<InterfaceCategoria, CategoriaRepository>();
 builder.Services.AddSingleton<InterfaceDespesa, DespesaRepository>();
@@ -65,9 +58,6 @@ builder.Services.AddSingleton<InterfaceUsuarioCreate, UsuarioCriadorRepository>(
 builder.Services.AddSingleton<InterfacePagamento, PagamentoRepository>();
 builder.Services.AddSingleton<InterfaceApplicationUser, ApplicationUserRepository>();
 
-
-
-
 // SERVIÇO DOMINIO
 builder.Services.AddSingleton<ICategoriaServico, CategoriaServico>();
 builder.Services.AddSingleton<IDespesaServico, DespesaServico>();
@@ -77,7 +67,6 @@ builder.Services.AddSingleton<IUsuarioSistemaFinanceiroServico, UsuarioSistemaFi
 builder.Services.AddSingleton<IUsuarioCreateServico, UsuarioCreateServico>();
 builder.Services.AddSingleton<IPagamentoServico, PagamentoServico>();
 
-
 // SERVIÇO DE EMAIL
 var emailConfig = builder.Configuration
         .GetSection("EmailConfiguration")
@@ -85,13 +74,16 @@ var emailConfig = builder.Configuration
 builder.Services.AddSingleton(emailConfig);
 builder.Services.AddAutoMapper(typeof(Program));
 
-/*Criar IdentityRole*/
+
+// Configuração OAuth Google
+builder.Services.AddScoped<OAuthService>();
+
+// Registrar o OAuthService
+builder.Services.AddScoped<OAuthService>();  // Certifique-se de registrar o OAuthService
 
 builder.Services.AddScoped<IEmailSender, EmailSender>();
 
-
 builder.Services.AddControllers();
-
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
              .AddJwtBearer(option =>
@@ -123,15 +115,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                  };
              });
 
-
-
-// Add services to the container.
-
-
-//builder.Services.AddAuthentication();
-
 // Processo geração de LOG
-
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .Enrich.FromLogContext()
@@ -145,7 +129,7 @@ var app = builder.Build();
 app.MigrateDatabase(configuration);
 app.MigrateDatabase(configuration);
 
-// Configure the HTTP request pipeline testes .
+// Configure the HTTP request pipeline testes.
 Log.Information("Configuring Swagger passou na program. Verificar..");
 if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
 {
@@ -156,8 +140,6 @@ if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
     // Log depois da configuração do Swagger
     Log.Information("Swagger configuration completedpassou na programpassou na programpassou na program.");
 }
-
-
 
 var devClient = "http://localhost:4200";
 var prdClient1 = "http://164.163.10.101:8080";
@@ -172,13 +154,10 @@ app.UseCors(x =>
      .AllowCredentials();  // Use this if you need to send cookies or HTTP authentication
 });
 
-
 app.UseHttpsRedirection();
-// testes de autenticacao 
+// testes de autenticacao
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapControllers();
 app.Run();
-

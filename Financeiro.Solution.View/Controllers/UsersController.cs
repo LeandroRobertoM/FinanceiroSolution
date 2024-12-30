@@ -6,27 +6,13 @@ using Financeiro.Solution.View.Token;
 using FinanceiroSolution.Domain.Entidades;
 using FinanceiroSolution.Domain.Enums;
 using FinanceiroSolution.Domain.Interfaces.IApplicationUser;
-using FinanceiroSolution.Domain.Interfaces.ICategoria;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
-using FinanceiroSolution.Domain.Interfaces.ISistemaFinanceiro;
 using FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro;
-using FinanceiroSolution.Domain.Interfaces.Servicos;
-using FinanceiroSolution.Domain.Servicos;
 using FinanceiroSolution.Domain.Servicos.EmailService;
-using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.OpenApi.Models;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Crypto;
-using Serilog;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 
 
