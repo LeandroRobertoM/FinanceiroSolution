@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using FinanceiroSolution.Domain.Enums;
+using Microsoft.OpenApi.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Financeiro.Solution.View.DTO.Login
 {
@@ -12,5 +14,7 @@ namespace Financeiro.Solution.View.DTO.Login
 
         public string? Email { get; set; }
         public string? Token { get; set; }
+
+        public EnumTipoOperacao? EnumTipo { get; set; }
     }
 }

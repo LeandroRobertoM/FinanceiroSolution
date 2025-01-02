@@ -12,6 +12,7 @@ using Serilog;
 using Serilog.Events;
 using System.Threading.Tasks;
 using Financeiro.Solution.View.Extensions;
+using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
 
 namespace Financeiro.Solution.View
 {
@@ -37,7 +38,9 @@ namespace Financeiro.Solution.View
             services.AddScoped<UsuarioSistemaFinanceiroRepository>();
             services.AddScoped<CategoriaRepository>();
             services.AddScoped<DespesaRepository>();
-            
+
+            services.AddSingleton<OAuthService>();
+
 
             services.AddLogging(c => c.AddFluentMigratorConsole())
                 .AddFluentMigratorCore()

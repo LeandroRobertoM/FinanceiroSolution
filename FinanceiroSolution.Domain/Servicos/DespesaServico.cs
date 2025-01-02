@@ -52,10 +52,7 @@ namespace FinanceiroSolution.Domain.Servicos
 
 
                     Console.WriteLine("Ocorreu um erro ao adicionar a Despesa: " + ex.Message);
-                    // Ou utilize sua biblioteca de log preferida para registrar o erro
-
-                    // Trate o erro aqui
-                    // ...
+                 
 
                 }
                 return false;

@@ -4,24 +4,15 @@ using Financeiro.Solution.View.DTO.User;
 using Financeiro.Solution.View.Models;
 using Financeiro.Solution.View.Token;
 using FinanceiroSolution.Domain.Entidades;
-using FinanceiroSolution.Domain.Interfaces.ICategoria;
+using FinanceiroSolution.Domain.Enums;
+using FinanceiroSolution.Domain.Interfaces.IApplicationUser;
 using FinanceiroSolution.Domain.Interfaces.InterfaceServicos;
 using FinanceiroSolution.Domain.Interfaces.IUsuarioSistemaFinanceiro;
-using FinanceiroSolution.Domain.Interfaces.Servicos;
-using FinanceiroSolution.Domain.Servicos;
 using FinanceiroSolution.Domain.Servicos.EmailService;
-using FinanceiroSolution.Domain.Servicos.EmailService.Configuration;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Crypto;
-using Serilog;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 
 
@@ -35,6 +26,7 @@ namespace Financeiro.Solution.View.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly UserManager<User> _userManagers;
+        private readonly InterfaceApplicationUser _InterfaceApplicationUser;
 
 
 
@@ -45,22 +37,32 @@ namespace Financeiro.Solution.View.Controllers
         private readonly TokenJWTBuilder _jwtHandler;
         private readonly IEmailSender _emailSender;
 
+        private readonly ILogger<UsersController> _loggerUser;
+
 
 
         public UsersController(UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager, InterfaceUsuarioCreate interfaceUsuarioCreate, IUsuarioCreateServico IUsuarioCreateServico,IMapper mapper, IEmailSender emailSender)
+                        SignInManager<ApplicationUser> signInManager,
+                        InterfaceUsuarioCreate interfaceUsuarioCreate,
+                        InterfaceApplicationUser interfaceApplicationUser,
+                        IUsuarioCreateServico IUsuarioCreateServico,
+                        IMapper mapper,
+                        IEmailSender emailSender,
+                        ILogger<UsersController> logger)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _InterfaceUsuarioCreate = interfaceUsuarioCreate;
+            _InterfaceApplicationUser = interfaceApplicationUser;
             _IUsuarioCreateServico = IUsuarioCreateServico;
             _emailSender = emailSender;
             _mapper = mapper;
+            _loggerUser = logger ?? throw new ArgumentNullException(nameof(logger)); // Garantir que o logger não seja nulo
         }
 
 
 
-   
+
         [Produces("application/json")]
         [HttpPost("/api/UsuarioLogin2")]
         public async Task<IActionResult> Login2([FromBody] UserForAuthenticationDto userForAuthentication)
@@ -73,9 +75,9 @@ namespace Financeiro.Solution.View.Controllers
             if (!await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
                 return Unauthorized(new AuthResponseDto { ErrorMessage = "Invalid Authentication" });
 
-            
+
             return Ok(new AuthResponseDto { IsAuthSuccessful = true });
-           
+
         }
 
         [HttpPost("/api/UsuarioLogin")]
@@ -83,13 +85,13 @@ namespace Financeiro.Solution.View.Controllers
         {
             var user = await _userManager.FindByNameAsync(userForAuthentication.Email);
             if (user == null)
-                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Invalid Request", Token = null });
+                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "E-mail não encontrado!", Token = null });
 
             if (!await _userManager.IsEmailConfirmedAsync(user))
-                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Email não confirmado ! ", Token = null });
+                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "E-mail não confirmado ! ", Token = null });
 
             if (!await _userManager.CheckPasswordAsync(user, userForAuthentication.Password))
-                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Invalid Authentication", Token = null });
+                return Ok(new AuthResponseDto { IsAuthSuccessful = false, ErrorMessage = "Senha Incorreta !", Token = null });
 
             var token = new TokenJWTBuilder()
                 .AddSecurityKey(JwtSecurityKey.Create("Secret_Key-12345678"))
@@ -185,11 +187,30 @@ namespace Financeiro.Solution.View.Controllers
         public async Task<IActionResult> AdicionaUsuarioCreate([FromBody] LoginUserCreate login)
         {
             if (string.IsNullOrWhiteSpace(login.email) ||
-                string.IsNullOrWhiteSpace(login.senha) ||
                 string.IsNullOrWhiteSpace(login.IdUsuarioLogado) ||
                 string.IsNullOrWhiteSpace(login.cpf))
             {
                 return Ok("Falta alguns dados do usuário");
+            }
+
+
+            if (login == null || !ModelState.IsValid)
+                return BadRequest();
+
+            var usuarioscpf = await _InterfaceApplicationUser.ListarUsuarioCpf(login.cpf);
+
+            if (usuarioscpf.Any())
+            {
+                var email = usuarioscpf.First().Email; // Obter o email do primeiro usuário encontrado
+                return BadRequest(new RegistrationResponseDto { Errors = new[] { $"CPF já está registrado para o email: {email}. \n Utilize o recurso de esqueci a senha" } });
+            }
+
+            var usuariosemail = await _InterfaceApplicationUser.ListarUsuarioEmail(login.email);
+            if (usuariosemail.Any())
+            {
+                var email = usuariosemail.First().Email;
+                // Obter o email do primeiro usuário encontrado
+                return BadRequest(new RegistrationResponseDto { Errors = new[] { $"Email já está registrado para : {email}. \n Utilize o recurso de esqueci a senha" } });
             }
 
             var user = new ApplicationUser
@@ -199,44 +220,51 @@ namespace Financeiro.Solution.View.Controllers
                 CPF = login.cpf
             };
 
-            var result = await _userManager.CreateAsync(user, login.senha);
+            var result = await _userManager.CreateAsync(user);
+
+            if (!result.Succeeded)
+            {
+                var errors = result.Errors.Select(e => e.Description);
+                return BadRequest(new RegistrationResponseDto { Errors = errors });
+            }
+            
+            var userId = user.Id;
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+
+            // retorno do email 
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+
+            var param = new Dictionary<string, string?>
+            {
+               {"token", code },
+               {"email", user.Email }
+            };
+
+            //var respose_Retorn = await _userManager.ConfirmEmailAsync(user, code);
+
+            var callback = QueryHelpers.AddQueryString(login.ClientURI, param);
+
+            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(
+                new string[] { user.Email }, "Confirmação de E-mail", callback, null);
+            await _emailSender.SendEmailAsync(message);
 
             if (result.Succeeded)
             {
-                // Se a criação do usuário foi bem-sucedida, o ID estará disponível em user.Id
-                var userId = user.Id;
 
-                // Geração de confirmação caso precise 
-                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
-
-                var respose_Retorn = await _userManager.ConfirmEmailAsync(user, code);
-
-
-
-
-                if (respose_Retorn.Succeeded)
+                if (login.IdUsuarioLogado != null)
                 {
 
-                    if (login.IdUsuarioLogado != null)
-                    {
-
-                        // Associa o ID do usuário logado ao novo usuário criado
-                        await _IUsuarioCreateServico.AdicionarUsuario(
-                            new UsuarioCreate
-                            {
-                                UsuarioCriadoId = userId,
-                                UsuarioCriadorId = login.IdUsuarioLogado,
-                                DataCadastro = DateTime.UtcNow
-                            });
-                    }
-                    return Ok("Usuário adicionado com sucesso!");
+                    // Associa o ID do usuário logado ao novo usuário criado
+                    await _IUsuarioCreateServico.AdicionarUsuario(
+                        new UsuarioCreate
+                        {
+                            UsuarioCriadoId = userId,
+                            UsuarioCriadorId = login.IdUsuarioLogado,
+                            DataCadastro = DateTime.UtcNow
+                        });
                 }
-                else
-                {
-                    return Ok("Erro ao confirmar cadastro de usuário!");
-                }
+                return Ok("Usuário adicionado com sucesso!");
             }
             else
             {
@@ -392,15 +420,35 @@ namespace Financeiro.Solution.View.Controllers
             if (userForRegistration == null || !ModelState.IsValid)
                 return BadRequest();
 
+            var usuarioscpf = await _InterfaceApplicationUser.ListarUsuarioCpf(userForRegistration.CPF);
+
+
+            if (usuarioscpf.Any())
+            {
+                var email = usuarioscpf.First().Email; // Obter o email do primeiro usuário encontrado
+                return BadRequest(new RegistrationResponseDto { Errors = new[] { $"CPF já está registrado para o email: {email}. \n Utilize o recurso de esqueci a senha" } });
+            }
+
+            var usuariosemail = await _InterfaceApplicationUser.ListarUsuarioEmail(userForRegistration.Email);
+            if (usuariosemail.Any())
+            {
+                var email = usuariosemail.First().Email;
+                // Obter o email do primeiro usuário encontrado
+                return BadRequest(new RegistrationResponseDto { Errors = new[] { $"Email já está registrado para : {email}. \n Utilize o recurso de esqueci a senha" } });
+            }
+
             var user = _mapper.Map<ApplicationUser>(userForRegistration);
+
+
             var result = await _userManager.CreateAsync(user, userForRegistration.Password);
+
 
             if (!result.Succeeded)
             {
                 var errors = result.Errors.Select(e => e.Description);
                 return BadRequest(new RegistrationResponseDto { Errors = errors });
             }
-       
+
 
             var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
             code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
@@ -414,7 +462,7 @@ namespace Financeiro.Solution.View.Controllers
                     {"email", user.Email }
                 };
 
-           // var respose_Retorn = await _userManager.ConfirmEmailAsync(user, code);
+            // var respose_Retorn = await _userManager.ConfirmEmailAsync(user, code);
 
             var callback = QueryHelpers.AddQueryString(userForRegistration.ClientURI, param);
 
@@ -434,7 +482,7 @@ namespace Financeiro.Solution.View.Controllers
 
             var user = await _userManager.FindByEmailAsync(forgotPasswordDto.Email);
             if (user == null)
-                return BadRequest("Invalid Request");
+                return BadRequest(new ForgotResponseErrorDto { IsSuccess = false, ErrorMessage = "Dados de entrada Invalidos." });
 
             var token = await _userManager.GeneratePasswordResetTokenAsync(user);
             var param = new Dictionary<string, string?>
@@ -444,37 +492,39 @@ namespace Financeiro.Solution.View.Controllers
             };
 
             var callback = QueryHelpers.AddQueryString(forgotPasswordDto.ClientURI, param);
-            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "Reset password token", callback, null);
+            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "reiniciar a senha do usuario", callback, null);
 
             await _emailSender.SendEmailAsync(message);
 
-            return Ok();
-        }
+            return Ok(new ForgotResponseDto { IsSuccess = true, Message = "Senha resetada com sucesso. Verifique seu e-mail para mais instruções." });
 
+        }
 
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordDto resetPasswordDto)
         {
             if (!ModelState.IsValid)
-                return BadRequest();
+                return BadRequest(new ForgotResponseErrorDto { IsSuccess = false, ErrorMessage = "Dados de entrada inválidos." });
 
             var user = await _userManager.FindByEmailAsync(resetPasswordDto.Email);
             if (user == null)
-                return BadRequest("Invalid Request");
+                return BadRequest(new ForgotResponseErrorDto { IsSuccess = false, ErrorMessage = "E-mail não encontrado", Message = resetPasswordDto.Email });
 
             var resetPassResult = await _userManager.ResetPasswordAsync(user, resetPasswordDto.Token, resetPasswordDto.Password);
             if (!resetPassResult.Succeeded)
             {
                 var errors = resetPassResult.Errors.Select(e => e.Description);
-
-                return BadRequest(new { Errors = errors });
+                return BadRequest(new ForgotResponseErrorDto { IsSuccess = false, ErrorMessage = string.Join(", ", errors) });
             }
 
-            return Ok();
+            var successMessage = resetPasswordDto.EnumTipo == EnumTipoOperacao.Cadastro
+                ? "Senha resetada com sucesso."
+                : "Senha resetada com sucesso. Verifique seu e-mail para mais instruções.";
+
+            return Ok(new ForgotResponseDto { IsSuccess = true, Message = successMessage });
         }
 
         [HttpGet("EmailConfirmation")]
-     
         public async Task<IActionResult> EmailConfirmation([FromQuery] string email, [FromQuery] string token)
         {
             var user = await _userManager.FindByEmailAsync(email);
@@ -484,8 +534,53 @@ namespace Financeiro.Solution.View.Controllers
             var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
             if (!confirmResult.Succeeded)
                 return BadRequest("Invalid Email Confirmation Request");
-
             return Ok();
+        }
+
+
+        [AllowAnonymous]
+        [HttpGet("ResetEmailConfirmation")]
+        public async Task<IActionResult> ResetEmailConfirmation([FromQuery] string email, [FromQuery] string token)
+        {
+            _loggerUser.LogInformation("Iniciando processo de confirmação de e-mail para {Email}", email);
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                _loggerUser.LogWarning("Email {Email} não encontrado", email);
+                return BadRequest("Email não encontrado");
+            }
+
+            var confirmResult = await _userManager.ConfirmEmailAsync(user, token);
+            if (!confirmResult.Succeeded)
+            {
+                _loggerUser.LogError("Não foi possível confirmar o e-mail para {Email}. Erros: {Errors}", email, confirmResult.Errors);
+                return BadRequest("Não foi possível confirmar o e-mail");
+            }
+
+            _loggerUser.LogInformation("E-mail confirmado com sucesso para {Email}", email);
+
+            // Gera um novo token de redefinição de senha
+            var tokens = await _userManager.GeneratePasswordResetTokenAsync(user);
+            _loggerUser.LogInformation("Token de redefinição de senha gerado para {Email}", email);
+
+            var param = new Dictionary<string, string?>
+    {
+        {"token", tokens },
+        {"email", email }
+    };
+
+            var clientURI = "http://techserra.com.br:8080/authentication/resetpassword";
+            var callback = QueryHelpers.AddQueryString(clientURI, param);
+            var message = new FinanceiroSolution.Domain.Servicos.EmailService.Message(new string[] { user.Email }, "Confirmação Ativando Usuario", callback, null);
+            _loggerUser.LogInformation("log Confirmação Ativando Usuario testes deu certo {Email}");
+            await _emailSender.SendEmailAsync(message);
+            _loggerUser.LogInformation("E-mail de confirmação enviado para {Email}", email);
+
+            // Retorna o token de redefinição de senha para o frontend
+            return Ok(new { Message = "E-mail confirmado" });
         }
     }
 }
+
+

@@ -10,6 +10,7 @@ namespace FinanceiroSolution.Domain.Interfaces.InterfaceServicos
     public interface IUsuarioSistemaFinanceiroServico
     {
         Task CadastrarUsuarioNoSistema(UsuarioSistemaFinanceiro usuarioSistemaFinanceiro);
+        Task CadastrarUsuarioNoSistemaLista(UsuarioSistemaFinanceiro usuarioSistemaFinanceiro);
         Task AdicionarListaSistemasUsuario(List<UsuarioSistemaFinanceiro> usuarioSistemaFinanceiro);
 
     }
