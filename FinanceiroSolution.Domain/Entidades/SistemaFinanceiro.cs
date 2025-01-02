@@ -12,6 +12,10 @@ namespace FinanceiroSolution.Domain.Entidades
         public string Nome { get; set; }
         public int Mes { get; set; }
         public int Ano { get; set; }
+        public DateTime DataCriacao { get; set; }
+        public DateTime AnoBase { get; set; }
+        public decimal? MetaAnual { get; set; }
+        public bool? Ativo { get; set; }
         public int DiaFechamento { get; set; }
         public bool GerarCopiaDespesa { get; set; }
         public int MesCopia { get; set; }
@@ -30,6 +34,17 @@ namespace FinanceiroSolution.Domain.Entidades
             this.AnoCopia = anoCopia;
 
         }
+
+        public SistemaFinanceiro(int Id, string nome, DateTime dataCriacao, DateTime anoBase, decimal metaAnual,bool ativo) 
+        {
+            this.Id = Id;
+            this.Nome = nome;
+            this.DataCriacao = dataCriacao;
+            this.AnoBase = anoBase;
+            this.MetaAnual = metaAnual;
+            this.Ativo = ativo;
+        }
+
         public SistemaFinanceiro() { }
     }
 }
