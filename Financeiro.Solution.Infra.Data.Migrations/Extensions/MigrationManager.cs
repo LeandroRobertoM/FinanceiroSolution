@@ -26,7 +26,6 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Extensions
                 {
                     string connectionString = configuration.GetConnectionString("SqlConnection");
                     string databaseName = new SqlConnectionStringBuilder(connectionString).InitialCatalog;
-                    //databaseService.CreateDatabase("SistemaFinanceiro12345");
                     databaseService.CreateDatabase(databaseName);
 
                     migrationService.ListMigrations();
@@ -41,10 +40,9 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Extensions
                     migrationService.MigrateUp(2023051406);
                     migrationService.MigrateUp(2023051407);
                     migrationService.MigrateUp(2024051001);
-                    //migrationService.MigrateUp(12);
+                    migrationService.MigrateUp(20250102);
 
 
-           
 
 
 
@@ -53,7 +51,7 @@ namespace Financeiro.Solution.Infra.Data.Migrations.Extensions
                 }
                 catch
                 {
-                    //log errors or ...
+
                     throw;
                 }
             }

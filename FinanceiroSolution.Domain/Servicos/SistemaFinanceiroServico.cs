@@ -41,6 +41,9 @@ namespace FinanceiroSolution.Domain.Servicos
                 return (false, 0,null);
             }
 
+
+            //Removido a funcionalidade. 
+       /*
             var data = DateTime.Now;
             sistemaFinanceiro.DiaFechamento = 1;
             sistemaFinanceiro.Ano = data.Year;
@@ -48,7 +51,7 @@ namespace FinanceiroSolution.Domain.Servicos
             sistemaFinanceiro.AnoCopia = data.Year;
             sistemaFinanceiro.MesCopia = data.Month;
             sistemaFinanceiro.GerarCopiaDespesa = true;
-
+       */
             try
             {
                 IResposta<(bool success, int IdSistemaFinanceiro,SistemaFinanceiro sistemaFianceiroObject)> resposta = await _interfaceSistemaFinanceiro.AdicionarSistemaFinanceiro(sistemaFinanceiro);
