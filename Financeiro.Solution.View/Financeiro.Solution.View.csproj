@@ -18,6 +18,8 @@
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.5" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.5" />
       <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.5" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.1.0" />
       <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.5" />
     <PackageReference Include="NETCore.MailKit" Version="2.1.0" />
@@ -35,6 +37,10 @@
     <ProjectReference Include="..\Financeiro.Solution.Infra.Data\Financeiro.Solution.Infra.Data.csproj" />
     <ProjectReference Include="..\Financeiro.Solution.Infra.Tests\Financeiro.Solution.Infra.Tests.csproj" />
     <ProjectReference Include="..\FinanceiroSolution.Domain\FinanceiroSolution.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="V2\" />
   </ItemGroup>
 
 </Project>

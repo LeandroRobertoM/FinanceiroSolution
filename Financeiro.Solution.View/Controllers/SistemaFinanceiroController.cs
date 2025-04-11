@@ -11,9 +11,10 @@ using Newtonsoft.Json;
 
 namespace Financeiro.Solution.View.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     [Authorize]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
+    [ApiController]
     public class SistemaFinanceiroController : ControllerBase
     {
         private readonly InterfaceSistemaFinanceiro _InterfacesistemaFinanceiro;
@@ -62,13 +63,8 @@ namespace Financeiro.Solution.View.Controllers
             SistemaFinanceiro NovosistemaFinanceiro = new SistemaFinanceiro
             {
                 Nome = sistemaFinanceiroViewModel.Nome,
-                Mes = sistemaFinanceiroViewModel.Mes,
-                Ano = sistemaFinanceiroViewModel.Ano,
-                DiaFechamento = sistemaFinanceiroViewModel.DiaFechamento,
-                GerarCopiaDespesa = sistemaFinanceiroViewModel.GerarCopiaDespesa,
-                MesCopia = sistemaFinanceiroViewModel.MesCopia,
-                AnoCopia = sistemaFinanceiroViewModel.AnoCopia
-
+                MetaAnual = sistemaFinanceiroViewModel.MetaAnual,
+                Ativo = sistemaFinanceiroViewModel.Ativo
             };
 
           try

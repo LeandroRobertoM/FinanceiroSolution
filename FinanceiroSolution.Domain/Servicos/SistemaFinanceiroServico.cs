@@ -42,16 +42,12 @@ namespace FinanceiroSolution.Domain.Servicos
             }
 
 
-            //Removido a funcionalidade. 
-       /*
+
+
             var data = DateTime.Now;
-            sistemaFinanceiro.DiaFechamento = 1;
-            sistemaFinanceiro.Ano = data.Year;
-            sistemaFinanceiro.Mes = data.Month;
-            sistemaFinanceiro.AnoCopia = data.Year;
-            sistemaFinanceiro.MesCopia = data.Month;
-            sistemaFinanceiro.GerarCopiaDespesa = true;
-       */
+            sistemaFinanceiro.DataCadastro = data;
+            sistemaFinanceiro.AnoBase = data;
+            sistemaFinanceiro.Ativo = true;
             try
             {
                 IResposta<(bool success, int IdSistemaFinanceiro,SistemaFinanceiro sistemaFianceiroObject)> resposta = await _interfaceSistemaFinanceiro.AdicionarSistemaFinanceiro(sistemaFinanceiro);
@@ -92,7 +88,7 @@ namespace FinanceiroSolution.Domain.Servicos
             var valido = sistemaFinanceiro.validarPropriedadeString(sistemaFinanceiro.Nome, "Nome");
             if (valido)
             {
-                sistemaFinanceiro.DiaFechamento = 1;
+               // sistemaFinanceiro.DiaFechamento = 1;
                 await _interfaceSistemaFinanceiro.Update(sistemaFinanceiro);
             }
             return false;

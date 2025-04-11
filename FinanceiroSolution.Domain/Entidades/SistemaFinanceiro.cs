@@ -10,36 +10,18 @@ namespace FinanceiroSolution.Domain.Entidades
     {
         public int Id { get; set; }
         public string Nome { get; set; }
-        public int Mes { get; set; }
-        public int Ano { get; set; }
-        public DateTime DataCriacao { get; set; }
+        public DateTime DataCadastro { get; set; }
         public DateTime AnoBase { get; set; }
         public decimal? MetaAnual { get; set; }
         public bool? Ativo { get; set; }
-        public int DiaFechamento { get; set; }
-        public bool GerarCopiaDespesa { get; set; }
-        public int MesCopia { get; set; }
-        public int AnoCopia { get; set; }
+ 
 
-        public SistemaFinanceiro(int Id, string nome, int mes, int ano, int diaFechamento,
-            bool gerarCopiaDespesa, int mesCopia, int anoCopia)
+    
+        public SistemaFinanceiro(int Id, string nome, DateTime dataCadastro, DateTime anoBase, decimal metaAnual,bool ativo) 
         {
             this.Id = Id;
             this.Nome = nome;
-            this.Mes = mes;
-            this.Ano = ano;
-            this.DiaFechamento = diaFechamento;
-            this.GerarCopiaDespesa = gerarCopiaDespesa;
-            this.MesCopia = mesCopia;
-            this.AnoCopia = anoCopia;
-
-        }
-
-        public SistemaFinanceiro(int Id, string nome, DateTime dataCriacao, DateTime anoBase, decimal metaAnual,bool ativo) 
-        {
-            this.Id = Id;
-            this.Nome = nome;
-            this.DataCriacao = dataCriacao;
+            this.DataCadastro = dataCadastro;
             this.AnoBase = anoBase;
             this.MetaAnual = metaAnual;
             this.Ativo = ativo;

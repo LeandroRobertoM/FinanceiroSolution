@@ -12,6 +12,8 @@ using Serilog;
 using Serilog.Events;
 using System.Threading.Tasks;
 using Financeiro.Solution.View.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Versioning;
 
 namespace Financeiro.Solution.View
 {
@@ -27,8 +29,8 @@ namespace Financeiro.Solution.View
 
         public void ConfigureServices(IServiceCollection services)
         {
-
-
+     
+     
             services.AddSingleton<DapperContext>();
             services.AddSingleton<Database>();
             services.AddSwagger();
